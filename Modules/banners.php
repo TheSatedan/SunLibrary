@@ -1,6 +1,10 @@
+<style>
+
+</style>
+
+
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+
 $dbTriConnection = databaseConnection();
 
 $val = mysqli_query($dbTriConnection, 'select 1 from `banners` LIMIT 1');
