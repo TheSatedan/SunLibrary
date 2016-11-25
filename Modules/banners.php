@@ -1,10 +1,44 @@
 <style>
 
+    #banner-background
+    {
+        height: 150px;
+        width: 100%;
+    }
+    .banner-content
+    {
+        background-image: url("../Images/Banner Background.png");
+        height: 150px;
+
+    }
+    .banner-content-left
+    {
+        padding-left: 30px;
+        padding-top: 35px;
+        float: left;
+        width: 60%;
+        text-shadow: 2px 2px 4px #000;
+    }
+
+    .banner-content-right
+    {
+        vertical-align: middle;
+        float: right;
+        width: 32%;
+               padding-top: 50px;
+    }
+    
+    img.banner-image
+    {
+        vertical-align: middle;
+    }
+    
 </style>
 
 
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', '1');
 $dbTriConnection = databaseConnection();
 
 $val = mysqli_query($dbTriConnection, 'select 1 from `banners` LIMIT 1');
@@ -21,10 +55,10 @@ class banners {
 
     protected $dbConnection;
 
-    const ModuleDescription = 'Creating and Displaying Banners of all sizes.';
+    const ModuleDescription = 'Banners. <br><br> Add and edit banner of all types and assignment of bannercode.';
     const ModuleAuthor = 'Sunsetcoders Development Team.';
     const ModuleVersion = '0.1';
-
+    
     function __construct($dbConnection) {
 
         $this->dbConnection = $dbConnection;
@@ -139,7 +173,7 @@ class banners {
                     ?>
 
                     <div class="banner-content">
-                        <div class="floatLeft"><?php echo $bannerContent; ?></div><div class="floatRight"><img src="<?php echo IMAGE_PATH . '/' . $bannerImageOne; ?>"><img src="<?php echo IMAGE_PATH . '/' . $bannerImageTwo; ?>"></div>
+                        <div class="banner-content-left"><?php echo nl2br($bannerContent); ?></div><div class="banner-content-right"><img class="banner-image" src="<?php echo IMAGE_PATH . '/' . $bannerImageOne; ?>"><img class="banner-image" src="<?php echo IMAGE_PATH . '/' . $bannerImageTwo; ?>"></div>
                     </div>
                 </div>
             </div>
