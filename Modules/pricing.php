@@ -1,4 +1,11 @@
 <?php
+/**
+ * Pricing module.
+ *
+ * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ */
+
 $dbTriConnection = databaseConnection();
 
 $val = mysqli_query($dbTriConnection, 'select 1 from `pricing` LIMIT 1');

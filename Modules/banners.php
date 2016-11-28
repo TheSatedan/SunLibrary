@@ -1,3 +1,12 @@
+<?php
+/**
+ * Banners module.
+ *
+ * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @todo            Replace use of "document.getElementById" by including the jQuery library.
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ */
+?>
 <style>
 
     #banner-background
@@ -34,8 +43,6 @@
     }
     
 </style>
-
-
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -182,3 +189,4 @@ class banners {
     }
 
 }
+?>

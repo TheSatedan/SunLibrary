@@ -1,4 +1,11 @@
 <?php
+/**
+ * Terms and conditions page.
+ *
+ * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
+ */
+
 $dbTriConnection = databaseConnection();
 
 

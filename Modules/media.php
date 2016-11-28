@@ -1,4 +1,10 @@
 <?php
+/**
+ * Media module.
+ *
+ * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ */
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
