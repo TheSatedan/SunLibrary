@@ -3,11 +3,18 @@
  * Resources module.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @todo            Change class to use db instance passed to it, rather than a global var.
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
-
+try
+{
+    $dbConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 class resources
 {

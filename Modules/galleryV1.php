@@ -3,6 +3,7 @@
  * Gallery - version 1.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @todo            Class uses a global variable for the DB, but also takes a DB connection in contructor args.  Should probably just use the constructor arg.
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
@@ -132,3 +133,4 @@ class gallery
 	}
 	
 }
+?>

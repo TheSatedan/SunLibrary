@@ -6,7 +6,15 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
+try
+{
+    $dbConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 

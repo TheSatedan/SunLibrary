@@ -6,9 +6,6 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
-
-
 class faq
 {
 	#const ModuleDescription = 'Frequently Asked Questions, Shows how to add them, modify and Delete them.';
@@ -25,9 +22,14 @@ class faq
 	
 	function __construct($dbConnection)
 	{
-		global $dbConnection;
-		
-		$this->dbConnection = $dbConnection;
+        try
+        {
+            $this->dbConnection=databaseConnection();
+        }
+        catch(Exception $objException)
+        {
+            die($objException);
+        }
 
 		$this->setPostID = filter_input(INPUT_POST, 'moduleID');
 		$this->setGetID = filter_input(INPUT_GET, 'moduleID');
@@ -164,3 +166,4 @@ class faq
 	}
 
 }
+?>

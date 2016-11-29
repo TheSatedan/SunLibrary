@@ -6,7 +6,14 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
+try
+{
+    $dbConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 class experiences {
 
@@ -171,5 +178,5 @@ class experiences {
         echo '<font color=black><b>Experience Information Updated <br><br> Please Wait!!!!<br>';
         echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Experiences">';
     }
-
 }
+?>

@@ -8,7 +8,14 @@
 error_reporting ( E_ALL );
 ini_set ( 'display_errors', '1' );
 
-$dbConnection = databaseConnection ();
+try
+{
+    $dbConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 $specialsClass = new menu ( $dbConnection );
 $specialsClass->switchMode ();
@@ -123,3 +130,4 @@ class menu {
 		}
 	}
 }
+?>

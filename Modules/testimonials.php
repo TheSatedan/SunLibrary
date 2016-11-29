@@ -6,7 +6,14 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  */
 
-$dbTriConnection = databaseConnection();
+try
+{
+    $dbTriConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
@@ -252,5 +259,5 @@ class testimonials {
 
         echo '</div></div>';
     }
-
 }
+?>

@@ -6,8 +6,14 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
-
+try
+{
+    $dbConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 class kidscorner
 {
@@ -25,3 +31,4 @@ class kidscorner
 		echo 'Hello World';
 	}
 }
+?>

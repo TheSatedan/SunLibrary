@@ -6,8 +6,6 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  */
 
-$dbConnection = databaseConnection();
-
 class cookbook {
 
     protected $dbConnection;
@@ -17,9 +15,14 @@ class cookbook {
     
     function __construct($dbConnection) {
 
-        global $dbConnection;
-
-        $this->dbConnection = $dbConnection;
+        try
+        {
+            $this->dbConnection=databaseConnection();
+        }
+        catch(Exception $objException)
+        {
+            die($objException);
+        }
 
         $val = mysqli_query($this->dbConnection, 'select 1 from `cookbook` LIMIT 1');
 
@@ -27,7 +30,7 @@ class cookbook {
             
         } else {
 
-            $createTable = $dbConnection->prepare("CREATE TABLE cookbook (cookbookID INT(11) AUTO_INCREMENT PRIMARY KEY, "
+            $createTable = $this->dbConnection->prepare("CREATE TABLE cookbook (cookbookID INT(11) AUTO_INCREMENT PRIMARY KEY, "
                     . "userID INT(11) NOT NULL, "
                     . "cookbookName VARCHAR(150) NOT NULL, "
                     . "cookbookPrice VARCHAR(100) NOT NULL, "

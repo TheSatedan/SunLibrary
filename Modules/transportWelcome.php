@@ -6,8 +6,14 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  */
 
-$dbTriConnection = databaseConnection();
-
+try
+{
+    $dbTriConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 /*
  * The Following Snippet is to insert the module table into the mysqli table. 
@@ -105,3 +111,4 @@ class transportWelcome {
     }
 
 }
+?>

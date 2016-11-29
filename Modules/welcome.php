@@ -6,7 +6,14 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  */
 
-$dbTriConnection = databaseConnection();
+try
+{
+    $dbTriConnection = databaseConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 $val = mysqli_query($dbTriConnection, 'select 1 from `welcome` LIMIT 1');
 
