@@ -30,7 +30,7 @@ class resources
 	private $postResourceID;
 	
 	
-	function __construct($dbConnection)
+	function __construct(mysqli $dbConnection)
 	{
 		global $dbConnection;
 		

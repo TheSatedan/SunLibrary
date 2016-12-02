@@ -37,7 +37,7 @@ class testimonials {
 
     protected $dbConnection;
 
-    function __construct($dbTriConnection) {
+    function __construct(mysqli $dbTriConnection) {
 
         $this->dbConnection = $dbTriConnection;
     }

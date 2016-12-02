@@ -29,7 +29,7 @@ class projects {
 
     protected $dbConnection;
 
-    function __construct($dbConnection) {
+    function __construct(mysqli $dbConnection) {
 
         $this->dbConnection = $dbConnection;
     }

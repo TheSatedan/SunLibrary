@@ -19,7 +19,7 @@ class gallery
 	
 	protected $dbConnection;
 	
-	function __construct($dbConnection)
+	function __construct(mysqli $dbConnection)
 	{
 		global $dbConnection;
 		

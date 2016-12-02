@@ -29,7 +29,7 @@ class menu {
 	public static $moduleAuthor = 'Andrew Jeffries';
 	public static $moduleVersion = '0.1';
 	
-	function __construct($dbConnection) {
+	function __construct(mysqli $dbConnection) {
 		$this->dbConnection = $dbConnection;
 		
 		$this->setPostID = filter_input ( INPUT_POST, 'moduleID' );

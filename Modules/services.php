@@ -34,7 +34,7 @@ class services {
     public $setGetModuleID;
     public $setPostModuleID;
 
-    function __construct($dbTriConnection) {
+    function __construct(mysqli $dbTriConnection) {
 
         $this->dbConnection = $dbTriConnection;
         $this->setGetModuleID = filter_input(INPUT_GET, 'moduleID');
