@@ -4,7 +4,8 @@
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @todo            Replace use of "document.getElementById" by including the jQuery library.
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:14:36 SM: Uses Database.
  */
 ?>
 <style>
@@ -48,7 +49,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 try
 {
-    $dbTriConnection = databaseConnection();
+    $dbConnection=Database::GetDBConnection();
 }
 catch(Exception $objException)
 {

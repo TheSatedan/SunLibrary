@@ -3,7 +3,8 @@
  * Cook Book class.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:18:33 SM: Uses database.
  */
 
 class cookbook {
@@ -12,12 +13,13 @@ class cookbook {
     const ModuleDescription = 'Cookbook Display Form Information. <br> Adding, Deleting and editing Recipes, themes and styles.';
     const ModuleAuthor = 'Sunsetcoders Development Team.';
     const ModuleVersion = '0.1';
-    
+
+    // SM:  This accepts dbConnection as a parameter, but doesn't use it.    
     function __construct($dbConnection) {
 
         try
         {
-            $this->dbConnection=databaseConnection();
+            $this->dbConnection=Database::GetDBConnection();
         }
         catch(Exception $objException)
         {

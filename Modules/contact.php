@@ -3,12 +3,13 @@
  * Contact module.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:17:20 SM: Uses database.
  */
 
 try
 {
-    $dbConnection = databaseConnection();
+    $dbConnection=Database::GetDBConnection();
 }
 catch(Exception $objException)
 {
@@ -17,7 +18,8 @@ catch(Exception $objException)
 
 echo '<link rel="stylesheet" type="text/css" href="style.css">';
 
-$val = mysqli_query($dbConnection, 'select 1 from `contact` LIMIT 1');
+// SM:  This will always return '1' in a reuslt set, as long as there is a CONTACT table in the current schema - is that what it should be doing?
+$val=$dbConnection->query('select 1 from `contact` LIMIT 1');
 
 if ($val !== FALSE) {
     
@@ -28,7 +30,7 @@ if ($val !== FALSE) {
     $createTable->close();
 }
 
-#$bodyContent = add_snippet_connection ( '[ShowPortfolio]', 'showPortfolio', $pageContent);
+// $bodyContent = add_snippet_connection ( '[ShowPortfolio]', 'showPortfolio', $pageContent);
 
 class contact {
 
