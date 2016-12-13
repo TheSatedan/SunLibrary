@@ -3,7 +3,8 @@
  * Media module.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:26:23 SM: Uses database.
  */
 
 error_reporting(E_ALL);
@@ -11,7 +12,7 @@ ini_set('display_errors', '1');
 
 try
 {
-    $dbConnection = databaseConnection();
+    $dbConnection=Database::GetDBConnection();
 }
 catch(Exception $objException)
 {

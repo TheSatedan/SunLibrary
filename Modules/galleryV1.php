@@ -4,10 +4,18 @@
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @todo            Class uses a global variable for the DB, but also takes a DB connection in contructor args.  Should probably just use the constructor arg.
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:25:11 SM: Uses database.
  */
+try
+{
+    $dbConnection=Database::GetDBConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
-$dbConnection = databaseConnection();
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
@@ -22,7 +30,6 @@ class gallery
 	function __construct(mysqli $dbConnection)
 	{
 		global $dbConnection;
-		
 		$this->dbConnection = $dbConnection;
 
 		

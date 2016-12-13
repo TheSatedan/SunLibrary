@@ -3,7 +3,8 @@
  * FAQ module.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:23:52 SM: Uses database.
  */
 
 class faq
@@ -24,7 +25,7 @@ class faq
 	{
         try
         {
-            $this->dbConnection=databaseConnection();
+            $this->dbConnection=Database::GetDBConnection();
         }
         catch(Exception $objException)
         {
