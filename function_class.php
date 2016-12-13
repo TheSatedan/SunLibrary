@@ -6,6 +6,7 @@
  * @todo            Pass the db connection instance to each module when rendered, instead of keeping it global.
  * @todo            Turn modules into classes that extend an abstract parent class, so they can be loaded and executed cleanly and securely.
  * @version         1.0.0               2016-11-28 08:14:46 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:38:42 SM:  Uses database.
  */
 ?>
 <style>
@@ -49,7 +50,14 @@
 </style>
 
 <?php
-$dbConnection = databaseConnection();
+try
+{
+    $dbConnection = Database::GetDBConnection();
+}
+catch(Exception $objException)
+{
+    die($objException);
+}
 
 /**
  * Loads and handles modules for a given site.
@@ -74,7 +82,7 @@ function sunlibrary() {
                 // SM:  Include the module and then render the details.
                 //--------------------------------------------------------------------------------------                
 
-                include ('Modules/' . $entry);
+                require_once 'Modules/' . $entry;
                 echo '<b>Version No.: </b><br>' . $moduleName::ModuleVersion . '<br><br>';
                 echo '<b>Author: </b><br>' . $moduleName::ModuleAuthor . '<br><br>';
                 echo '<b>Description: </b><br>' . $moduleName::ModuleDescription . '<br><br>';
