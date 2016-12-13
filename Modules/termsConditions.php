@@ -3,12 +3,13 @@
  * Terms and conditions page.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:46:13 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:33:19 SM: Uses database.
  */
 
 try
 {
-    $dbTriConnection = databaseConnection();
+    $dbTriConnection = Database::GetDBConnection();
 }
 catch(Exception $objException)
 {

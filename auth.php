@@ -1,12 +1,13 @@
 <?php
 /**
- * Database utilies?
+ * Database utilies
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @todo            Maybe turn this into a DB factory - a class that has a static method to return a DB instance.
  * @version         1.0.0               2016-11-28 08:23:21 SM:  Prototype
  * @version         1.1.0               2016-11-29 07:30:26 SM:  Function headings, adding PDO function support.
  * @version         1.2.0               2016-12-13 15:15:54 SM:  Created DB class with a view to deprecating stand alone global functions.
+ * @version         2.0.0               2016-12-13 16:35:58 SM:  Removed old functions.
  */
 
 error_reporting(E_ALL);
@@ -16,51 +17,6 @@ define('DB_HOST','host',true);
 define('DB_USER','root',true);
 define('DB_PASS','Aort101ms',true);
 define('DB_CATALOGUE','sunlibrary',true);
-
-/**
- * Returns a handle to a mysqli connection.
- *
- * @deprecated 1.2.0 Deprecated in favour of database class.
- * @see Database::GetDBConnection
- * @return          mysqli              Connection to MySQLI database.
- * @throws          Exception           Unable to connect to the database.
- */
-function databaseConnection()
-{
-    try
-    {
-        return Database::GetDBConnection();
-    }
-    catch(Exception $objException)
-    {
-        throw $objException;
-    }
-}
-
-/**
- * Returns a PDO connection object to the database.
- *
- * @deprecated 1.2.0 Deprecated in favour of database class.
- * @see Database::GetPDODBConnection
- * @return          PDO             PDO DB connection.
- * @throws          Exception       PDO extension not loaded.
- * @throws          PDOException    PDO could not connect to the database.
- */
-function getDatabasePDO()
-{
-    try
-    {
-        return Database::GetPDODBConnection();
-    }
-    catch(Exception $objException)
-    {
-        throw $objException;
-    }
-    catch(PDOException $objPDOException)
-    {
-        throw $objPDOException;
-    }
-}
 
 /**
  * Database

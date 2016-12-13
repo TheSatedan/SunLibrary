@@ -3,12 +3,12 @@
  * Description
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
+ * @version         1.0.1               2016-12-13 16:32:11 SM: Uses database.
  */
-
 try
 {
-    $dbTriConnection = databaseConnection();
+    $dbTriConnection = Database::GetDBConnection();
 }
 catch(Exception $objException)
 {
