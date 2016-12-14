@@ -5,42 +5,22 @@
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:05 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 16:38:51 SM:  Uses SunLibraryModule.
  */
 
-try
-{
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-/*
- * The Following Snippet is to insert the module table into the mysqli table. 
- */
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `TransportQuote` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class TransportQuote {
+class TransportQuote extends SunLibraryModule {
 
     protected $dbConnection;
 
-    function __construct(mysqli $dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function TransportQuote() {
-
+    public function TransportQuote()
+    {
         /*
          * This is prometheus Administrator output.
          */
@@ -188,20 +168,9 @@ class TransportQuote {
         echo '<meta http-equiv="refresh" content="1;url=?id=Team">';
     }
 
-    public function callToFunction() {
-        ?>
-<script type="text/javascript">
-
-function yesnoCheck() {
-    if (document.getElementById('yesCheck').checked) {
-        document.getElementById('ifYes').style.display = 'block';
-    }
-    else document.getElementById('ifYes').style.display = 'none';
-
-}
-
-</script>
-
+    public function callToFunction()
+    {
+?>
         <div id="quote-background">
             <div class="body-content">
                 <div><br><br><h2>Request a Quote</h2></div>
@@ -238,7 +207,38 @@ function yesnoCheck() {
                 </div>
             </div>
         </div>
-        <?php
+<?php
+    }
+
+    public function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `TransportQuote` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $dbTriConnection->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objRsult->free();
+    }
+    
+    public function renderCustomJavaScript()
+    {
+?>
+        function yesnoCheck()
+        {
+            if (document.getElementById('yesCheck').checked)
+                document.getElementById('ifYes').style.display = 'block';
+            else 
+                document.getElementById('ifYes').style.display = 'none';
+        }
+<?php
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
     }
 }
 ?>

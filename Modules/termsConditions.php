@@ -3,40 +3,21 @@
  * Terms and conditions page.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:46:13 SM: Prototype
- * @version         1.0.1               2016-12-13 16:33:19 SM: Uses database.
+ * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:33:19 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 16:46:32 SM:  Uses SunLibraryModule.
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class termsConditions extends SunLibraryModule
 {
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-/*
- * The Following Snippet is to insert the module table into the mysqli table. 
- */
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `terms` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE terms (termID INT(11) AUTO_INCREMENT PRIMARY KEY, termsContent VARCHAR(20000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class termsConditions {
 
     protected $dbConnection;
 
     function __construct($dbConnection) {
 
-        $this->dbConnection = $dbConnection;
+        parent::__construct($dbConnection);
     }
 
         public function termsConditions() {
@@ -48,7 +29,7 @@ class termsConditions {
         echo '<form method="POST" action="?id=Terms&&moduleID=UpdateContent">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($contentCode);
@@ -71,7 +52,7 @@ class termsConditions {
         echo '<form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($contentCode);
@@ -144,11 +125,11 @@ class termsConditions {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
+        $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -165,11 +146,11 @@ class termsConditions {
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE terms SET $contentCode=? WHERE termsID=1");
+        $stmt = $this->objDB->prepare("UPDATE terms SET $contentCode=? WHERE termsID=1");
         $stmt->bind_param('s', $contentDescription);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -200,6 +181,24 @@ class termsConditions {
             </div>
 <?php
         }
+    }
+
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `terms` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE terms (termID INT(11) AUTO_INCREMENT PRIMARY KEY, termsContent VARCHAR(20000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
     }
 }
 ?>

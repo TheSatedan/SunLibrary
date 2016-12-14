@@ -4,23 +4,25 @@
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
+ * @version         1.1.0               2016-12-14 16:51:36 SM:  Uses SunLibraryModule.
  */
 
-class flatbedslider {
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-    protected $dbConnection;
-
-    function __construct(mysqli $dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+class flatbedslider extends SunLibraryModule
+{
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function flatbedslider() {
-        ?>
+    public function flatbedslider()
+    {
+?>
         <div id="faderTable">
             <div id="slider">
                 <?php
-                $stmt = $this->dbConnection->prepare("SELECT imageToSlide FROM flatbedslider");
+                $stmt = $this->objDB->prepare("SELECT imageToSlide FROM flatbedslider");
                 $stmt->execute();
                 $stmt->bind_result($imageToSlide);
 
@@ -91,11 +93,11 @@ class flatbedslider {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
+        $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -113,7 +115,7 @@ class flatbedslider {
             <div id="slider">
 
         <?php
-        $stmt = $this->dbConnection->prepare("SELECT pageID, pageName, pagePublish FROM pages");
+        $stmt = $this->objDB->prepare("SELECT pageID, pageName, pagePublish FROM pages");
         $stmt->execute();
 
         $stmt->bind_result($pageID, $pageName, $pagePublish);
@@ -125,9 +127,12 @@ class flatbedslider {
         ?>
             </div>
         </div>
-
         <?php
     }
 
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }
 ?>

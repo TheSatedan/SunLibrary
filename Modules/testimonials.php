@@ -5,42 +5,16 @@
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:33:48 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 16:41:55 SM:  Uses SunLibraryModule.
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class testimonials extends SunLibraryModule
 {
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-echo '<link rel="stylesheet" type="text/css" href="../style.css">';
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `testimonials` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    echo 'Table Doesnt Exist....';
-
-    $createTable = $dbTriConnection->prepare("CREATE TABLE testimonials (testimonialID INT(11) AUTO_INCREMENT PRIMARY KEY, userID INT(11) NOT NULL, testimonialDescription VARCHAR(10000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-
-    echo 'Table Created.';
-}
-
-class testimonials {
-
-    protected $dbConnection;
-
     function __construct(mysqli $dbTriConnection) {
 
-        $this->dbConnection = $dbTriConnection;
+        parent::__construct($dbTriConnection);
     }
 
     public function listTestimonials() {
@@ -204,7 +178,7 @@ class testimonials {
         echo '<div class="leftBank">';
         echo '<h2>Testimonials</h2>';
         echo '<br>';
-        if ($stmt = $this->dbConnection->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=1 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=1 ")) {
 
             $stmt->execute();
 
@@ -217,7 +191,7 @@ class testimonials {
             $stmt->close();
         }
 
-        if ($stmt = $this->dbConnection->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=2 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=2 ")) {
 
             $stmt->execute();
 
@@ -234,7 +208,7 @@ class testimonials {
         echo '</div><div class="rightBank">';
         echo '<h2>Our Team</h2>';
         echo '<br>';
-        if ($stmt = $this->dbConnection->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=1 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=1 ")) {
 
             $stmt->execute();
 
@@ -246,7 +220,7 @@ class testimonials {
             $stmt->close();
         }
 
-        if ($stmt = $this->dbConnection->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=2 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT userFullName, userHyperlink, testimonials.userID, testimonialDescription FROM testimonials INNER JOIN users ON users.userID=testimonials.userID WHERE testimonialID=2 ")) {
 
             $stmt->execute();
 
@@ -260,5 +234,30 @@ class testimonials {
 
         echo '</div></div>';
     }
+
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `testimonials` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE testimonials (testimonialID INT(11) AUTO_INCREMENT PRIMARY KEY, userID INT(11) NOT NULL, testimonialDescription VARCHAR(10000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function renderHeaderLinks()
+    {
+?>
+        <link rel="stylesheet" type="text/css" href="../style.css">
+<?php
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>

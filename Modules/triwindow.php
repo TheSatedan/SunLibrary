@@ -5,38 +5,20 @@
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:38 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 15:50:45 SM:  Uses SunLibraryModule
  */
 
-try
-{
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
 /*
  * The Following Snippet is to insert the module table into the mysqli table. 
  */
 
-$val = mysqli_query($dbTriConnection, 'select 1 from `triwindow` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE triwindow (triwindowID INT(11) AUTO_INCREMENT PRIMARY KEY, windowOne VARCHAR(3000) NOT NULL, windowTwo VARCHAR(3000) NOT NULL, windowThree VARCHAR(3000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class triwindow {
-
-    protected $dbConnection;
-
-    function __construct(mysqli $dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+class triwindow extends SunLibraryModule
+{
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
     public function triwindow() {
@@ -106,12 +88,12 @@ class triwindow {
 
     public function callToFunction() {
 
-        if ($stmt = $this->dbConnection->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1")) {
-
+        if ($stmt = $this->objDB->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1"))
+        {
             $stmt->execute();
             $stmt->bind_result($windowOne, $windowTwo, $windowThree);
             $stmt->fetch();
-            ?>
+?>
             <div id="triWindow-Background">
                 <div class="body-content">
                     <div class="triWindow-content">
@@ -122,9 +104,26 @@ class triwindow {
                 </div>
             </div>
             <div class="spacer"></div>
-            <?php
+<?php
         }
     }
 
+    public function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `triwindow` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $dbTriConnection->prepare("CREATE TABLE triwindow (triwindowID INT(11) AUTO_INCREMENT PRIMARY KEY, windowOne VARCHAR(3000) NOT NULL, windowTwo VARCHAR(3000) NOT NULL, windowThree VARCHAR(3000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }
 ?>

@@ -4,44 +4,29 @@
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @todo            Change class to use db instance passed to it, rather than a global var.
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:31:24 SM: Uses database.
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:31:24 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 16:58:41 SM:  Uses SunLibraryModule.
  */
 
-try
-{
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-class resources
-{
-	#const ModuleDescription = 'Access to add addition Resource Links as well change all Resource information  on pages in a text Editor.';
-	#const ModuleAuthor = 'Sunsetcoders Development Team.';
-	#const ModuleVersion = '1.0c';
-	
-	protected $dbConnection;
-	
+class resources extends SunLibraryModule
+{	
 	private $setPostID;
 	private $setGetID;
 	private $getResourceID;
 	private $postResourceID;
 	
-	
 	function __construct(mysqli $dbConnection)
 	{
-		global $dbConnection;
-		
-		$this->dbConnection = $dbConnection;
-
 		$this->setPostID = filter_input(INPUT_POST, 'moduleID');
 		$this->setGetID = filter_input(INPUT_GET, 'moduleID');
 		
 		$this->getResourceID = filter_input(INPUT_GET, 'resourceID');
 		$this->postResourceID = filter_input(INPUT_POST, 'resourceID');
+		
+		parent::__construct($dbConnection);
 	}
 	
 	public function resources()
@@ -49,7 +34,7 @@ class resources
 		echo '<b>Resources</b> <a href="web-settings.php?id=Resources&&moduleID=AddResource"><button>Add New</button></a><br><br><br>';
 		echo '<table width=100% cellpadding=5 cellspacing=0 border=1>';
 		echo '<tr bgcolor=Black><td>Resource Name</td><td>Resource Hyperlink</td></tr>';
-		$stmt = $this->dbConnection->prepare ( "SELECT resourceID, resourceName, resourceLink FROM resources" );
+		$stmt = $this->objDB->prepare ( "SELECT resourceID, resourceName, resourceLink FROM resources" );
 		$stmt->execute ();
 		
 		$stmt->bind_result ( $resourceID, $resourceName, $resourceLink );
@@ -151,7 +136,7 @@ class resources
 		$resourceName = filter_input ( INPUT_POST, 'resourceName' );
 		$resourceLink = filter_input ( INPUT_POST, 'resourceLink' );
 
-		$stmt = $this->dbConnection->prepare ( "INSERT INTO resources (resourceName, resourceLink) VALUES (?,?)" );
+		$stmt = $this->objDB->prepare ( "INSERT INTO resources (resourceName, resourceLink) VALUES (?,?)" );
 		
 		$stmt->bind_param ( 'ss', $resourceName, $resourceLink );
 		
@@ -180,7 +165,7 @@ class resources
 		echo '<input type="hidden" name="resourceID" value="'.$resourceID.'">';
 		
 		
-		if ($stmt = $this->dbConnection->prepare ( "SELECT resourceID, resourceName, resourceLink FROM resources WHERE resourceID=? " )) {
+		if ($stmt = $this->objDB->prepare ( "SELECT resourceID, resourceName, resourceLink FROM resources WHERE resourceID=? " )) {
 		
 			$stmt->bind_param ( "i", $resourceID );
 			$stmt->execute ();
@@ -203,11 +188,11 @@ class resources
 		$resourceLink = filter_input(INPUT_POST, 'resourceLink');
 		$resourceID = filter_input(INPUT_POST, 'resourceID');
 		
-		$stmt = $this->dbConnection->prepare("UPDATE resources SET resourceName=?, resourceLink=? WHERE resourceID=?");
+		$stmt = $this->objDB->prepare("UPDATE resources SET resourceName=?, resourceLink=? WHERE resourceID=?");
         $stmt->bind_param('ssi', $resourceName, $resourceLink, $resourceID);
         
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -223,7 +208,7 @@ class resources
 	{
 		$getID = filter_input(INPUT_GET, 'resourceID');
 	
-		$stmt = $this->dbConnection->prepare("DELETE FROM resources WHERE resourceID = ?");
+		$stmt = $this->objDB->prepare("DELETE FROM resources WHERE resourceID = ?");
 		$stmt->bind_param('i', $getID);
 		$stmt->execute();
 		$stmt->close();
@@ -231,5 +216,10 @@ class resources
 		echo 'You have successfully deleted a Resource. <br><br><br>Please Wait.....<br>';
 		echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Resources">';
 	}
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }	
 }
 ?>

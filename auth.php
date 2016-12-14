@@ -18,6 +18,8 @@ define('DB_USER','root',true);
 define('DB_PASS','Aort101ms',true);
 define('DB_CATALOGUE','sunlibrary',true);
 
+define('PROJECT_TITLE','SunLibrary',true);
+
 /**
  * Database
  *
@@ -33,7 +35,9 @@ final class Database
      */
     public static function GetDBConnection()
     {
-        $objDB=new mysqli(DB_HOST, DB_USER, DB_PASS, DB_CATALOGUE);
+        // SM:  p: here tries to force the connection to be PERSISTENT.
+        //      If this causes connection errors, remove it - you probably have PHP 5.3.x
+        $objDB=new mysqli('p:'.DB_HOST, DB_USER, DB_PASS, DB_CATALOGUE);
         if ($objDB->connect_error)
             throw new Exception(__FUNCTION__." failed to connect to the database.  DB error ({$objDB->connect_errno}) - {$objDB->connect_error}");
         return $objDB;

@@ -1,44 +1,25 @@
 <?php
 /**
- * Description
+ * Services module.
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:32:11 SM: Uses database.
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:32:11 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 16:54:40 SM:  Uses SunLibraryModule.
  */
-try
+
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class services extends SunLibraryModule
 {
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-echo '<link rel="stylesheet" type="text/css" href="../style.css">';
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `services ` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-
-    $createTable = $dbTriConnection->prepare("CREATE TABLE services (serviceID INT(11) AUTO_INCREMENT PRIMARY KEY, serviceName INT(11) NOT NULL, serviceDescription VARCHAR(10000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class services {
-
-    protected $dbConnection;
     public $setGetModuleID;
     public $setPostModuleID;
 
-    function __construct(mysqli $dbTriConnection) {
-
-        $this->dbConnection = $dbTriConnection;
+    function __construct(mysqli $dbTriConnection)
+    {
         $this->setGetModuleID = filter_input(INPUT_GET, 'moduleID');
         $this->setPostModuleID = filter_input(INPUT_POST, 'moduleID');
+        parent::__construct($dbTriConnection);
     }
 
     public function services() {
@@ -66,12 +47,10 @@ class services {
 
     public function listServices() {
 
-        global $dbTriConnection;
-
         echo '<div class="something">Services <a href="?id=Services&&moduleID=addService"><button>Add New</button></a></div>';
         echo '<br>';
 
-        $serviceRef = $dbTriConnection->prepare("SELECT serviceID, serviceName FROM services");
+        $serviceRef = $this->objDB->prepare("SELECT serviceID, serviceName FROM services");
         $serviceRef->execute();
 
         $serviceRef->bind_result($serviceID, $serviceName);
@@ -100,7 +79,7 @@ class services {
         $serviceName = filter_input(INPUT_POST, "serviceName");
         $setContent = filter_input(INPUT_POST, "area2");
 
-        $serviceRef = $dbConnection->prepare("INSERT INTO services (serviceName, serviceDescription) VALUES (?,?)");
+        $serviceRef = $this->objDB->prepare("INSERT INTO services (serviceName, serviceDescription) VALUES (?,?)");
         $serviceRef->bind_param('ss', $serviceName, $setContent);
         $status = $serviceRef->execute();
 
@@ -112,7 +91,7 @@ class services {
 
         $getID = filter_input(INPUT_GET, "serviceID");
 
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=? ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=? ")) {
 
             $stmt->bind_param("i", $getID);
             $stmt->execute();
@@ -137,11 +116,11 @@ class services {
         $serviceID = filter_input(INPUT_POST, 'serviceID');
         $serviceName = filter_input(INPUT_POST, 'serviceName');
 
-        $stmt = $this->dbConnection->prepare("UPDATE services SET serviceDescription=?, serviceName=? WHERE serviceID=?");
+        $stmt = $this->objDB->prepare("UPDATE services SET serviceDescription=?, serviceName=? WHERE serviceID=?");
         $stmt->bind_param('ssi', $serviceDescription, $serviceName, $serviceID);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -166,7 +145,7 @@ class services {
         echo '<div class="body-content">';
         echo '<div><br><h1>Services</h1></div>';
         echo '<div class="services-3">';
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=1 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=1 ")) {
 
             $stmt->execute();
             $stmt->bind_result($serviceName, $serviceDescription);
@@ -177,7 +156,7 @@ class services {
             $stmt->close();
         }
 
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 ")) {
 
             $stmt->execute();
             $stmt->bind_result($serviceName, $serviceDescription);
@@ -189,7 +168,7 @@ class services {
         }
 
         echo '</div><div class="services-3">';
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=3 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=3 ")) {
 
             $stmt->execute();
             $stmt->bind_result($serviceName, $serviceDescription);
@@ -200,7 +179,7 @@ class services {
             $stmt->close();
         }
 
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=4 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=4 ")) {
 
             $stmt->execute();
             $stmt->bind_result($serviceName, $serviceDescription);
@@ -212,7 +191,7 @@ class services {
         }
         echo '</div><div class="services-3">';
 
-        if ($stmt = $this->dbConnection->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=5 ")) {
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=5 ")) {
 
             $stmt->execute();
             $stmt->bind_result($serviceName, $serviceDescription);
@@ -225,5 +204,29 @@ class services {
         echo '</div></div>';
     }
 
+    public function renderHeaderLinks()
+    {
+?>
+        <link rel="stylesheet" type="text/css" href="../style.css">
+<?php
+    }
+
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `services ` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE services (serviceID INT(11) AUTO_INCREMENT PRIMARY KEY, serviceName INT(11) NOT NULL, serviceDescription VARCHAR(10000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>

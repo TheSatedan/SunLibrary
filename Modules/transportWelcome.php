@@ -5,42 +5,20 @@
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:22 SM:  Uses database.
+ * @version         1.1.0               2016-12-14 15:51:07 SM:  Uses SunLibraryModule
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class transportWelcome extends SunLibraryModule
 {
-    $dbTriConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-/*
- * The Following Snippet is to insert the module table into the mysqli table. 
- */
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `welcome` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE welcome (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, section1 VARCHAR(1000) NOT NULL, section2 VARCHAR(2000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class transportWelcome {
-
-    protected $dbConnection;
-
-    function __construct(mysqli $dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function transportWelcome() {
-
+    public function transportWelcome()
+    {
         /*
          * This is prometheus Administrator output.
          */
@@ -91,11 +69,11 @@ class transportWelcome {
     }
 
     public function callToFunction() {
-        ?>
+?>
         <br><br><div id="transport-background">
             <div class="body-content">
                 <div class="transport-content">
-                    <?php
+<?php
                     if ($stmt = $this->dbConnection->prepare("SELECT section1, section2 FROM welcome WHERE welcomeID=1 ")) {
 
                         $stmt->execute();
@@ -104,12 +82,29 @@ class transportWelcome {
 
                         echo '<div class="leftBank">' . nl2br($section1) . '</div><div class="rightBank">' . nl2br($section2) . '</div>';
                     }
-                    ?>
+?>
                 </div>
             </div>
         </div>
-        <?php
+<?php
     }
 
+    public function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `welcome` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE welcome (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, section1 VARCHAR(1000) NOT NULL, section2 VARCHAR(2000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }
 ?>

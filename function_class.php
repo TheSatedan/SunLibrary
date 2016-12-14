@@ -8,56 +8,6 @@
  * @version         1.0.0               2016-11-28 08:14:46 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:38:42 SM:  Uses database.
  */
-?>
-<style>
-    body
-    {
-        background-color: #eee;
-        padding: 0;
-        margin: 0;
-        font-family: century gothic;
-    }
-    .body-content
-    {
-        margin: 0 auto;
-        max-width: 1024px;
-    }
-
-    .module-display
-    {
-        float: left;
-        width: 400px;
-        border: 1px #333 solid;
-        background-color: #fff;
-        height: 370px; 
-        padding: 10px;
-        margin: 15px;
-        position: relative;
-    }
-    h2
-    {
-        color: darkcyan;
-    }
-
-    a.bottomView
-    {
-        position: absolute; 
-        bottom: 0;
-        text-decoration: none;
-        color: darkcyan;
-        font-weight: bolder;
-    }
-</style>
-
-<?php
-try
-{
-    $dbConnection = Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
 
 /**
  * Loads and handles modules for a given site.
@@ -65,32 +15,175 @@ catch(Exception $objException)
  *
  * @return          void
  */
-function sunlibrary() {
-    echo '<div class="body-content">';
-    if ($handle = opendir('Modules')) {
-        while (false !== ($entry = readdir($handle))) {
-            if ($entry != "." && $entry != "..") {
-                $moduleName = substr($entry, 0, -4);
-                
-                //--------------------------------------------------------------------------------------
-                // SM:  Prepare the containing DIV for this module and it's title.
-                //--------------------------------------------------------------------------------------                
-                
-                echo '<div class="module-display"><h2>' . strtoupper($moduleName) . '</h2>';
+function sunlibrary(ModuleManager $objModules) 
+{
+    try
+    {
+?>
+        <h1>All Loaded Modules</h1>
+        <div class="module-display">
+            <ul>
+<?php
+                foreach($objModules as $objModule)
+                {
+?>
+                    <li><code><?=get_class($objModule); ?> - version: <?=$objModule->getVersion();?></code></li>
+<?php
+                }
+?>
+            </ul>
+        </div>
+        <p></p>
+        <h1>Rendering All Modules</h1>
+        <div class="module-display">
+<?php
+            $objModules->RenderAll();
+?>
+        </div>
+<?php
+        $objModules->RenderAll();
+    }
+    catch(Exception $objException)
+    {
+        die($objException);
+    }   
+}
 
-                //--------------------------------------------------------------------------------------                
-                // SM:  Include the module and then render the details.
-                //--------------------------------------------------------------------------------------                
+final class ModuleManager implements Iterator,ArrayAccess,Countable
+{
+    protected $arrModules=array();
+    
+    protected $lngPosition;
+    
+    /**
+     * Construct a new module manager.
+     *
+     * @param mysqli $objDB Connection to the database.
+     * @return void
+     * @throws Exception If the loading and instantiating of any particular module failed.
+     */
+    public function __construct(mysqli $objDB)
+    {
+        $this->lngPosition=0;
+        if ($handle = opendir('Modules')) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
 
-                require_once 'Modules/' . $entry;
-                echo '<b>Version No.: </b><br>' . $moduleName::ModuleVersion . '<br><br>';
-                echo '<b>Author: </b><br>' . $moduleName::ModuleAuthor . '<br><br>';
-                echo '<b>Description: </b><br>' . $moduleName::ModuleDescription . '<br><br>';
-                echo '<br><a class="bottomView" href="">View Module</a></div>';
+                    //--------------------------------------------------------------------------------------                
+                    // SM:  Include the module and then render the details.
+                    //--------------------------------------------------------------------------------------                
+
+                    require_once 'Modules/' . $entry;
+                    
+                    try
+                    {
+                        $objModule=new $entry($dbConnection);
+                        $arrModules[$entry]=$objModule;
+                    }
+                    catch(Exception $objException)
+                    {
+                        throw $objException;
+                    }                                        
+                }
+            }
+            closedir($handle);
+        }
+    }
+    
+    /**
+     * Render all of the modules we have loaded.
+     *
+     * @return void
+     * @throws Exception Thrown if the callToFunction of any SunLibrary module has failed.
+     */
+    public function RenderAll()
+    {
+        foreach($this as $objModule)
+        {
+            try
+            {
+                $objModule->callToFunction();
+            }
+            catch(Exception $objException)
+            {
+                throw $objException;
             }
         }
-        closedir($handle);
     }
-    echo '</div>';
+    
+    /**
+     * Iterator interface
+     */
+    public function rewind()
+    {
+        $this->lngPosition = 0;
+    }
+    
+    /**
+     * Iterator interface
+     */
+    public function key()
+    {
+        return $this->lngPosition;
+    }
+    
+    /**
+     * Iterator interface
+     */
+    public function next()
+    {
+        ++$this->lngPosition;
+    }
+    
+    /**
+     * Iterator interface
+     */
+    public function valid()
+    {
+        return isset($this->arrModules[$this->lngPosition]);
+    }
+
+    /**
+     * ArrayAccess interface
+     */
+    public function offsetSet($mixOffset, SunLibraryModule $objModule)
+    {
+        if (is_null($mixOffset))
+            $this->arrModules[] = $objModule;
+        else
+            $this->arrModules[$mixOffset] = $objModule;
+    }
+    
+    /**
+     * ArrayAccess interface
+     */
+    public function offsetExists($mixOffset)
+    {
+        return isset($this->arrModules[$mixOffset]);
+    }    
+
+    /**
+     * ArrayAccess interface
+     */
+    public function offsetUnset($mixOffset)
+    {
+        unset($this->arrModules[$mixOffset]);
+    }
+    
+    /**
+     * ArrayAccess interface
+     */
+    public function offsetGet($mixOffset)
+    {
+        return isset($this->arrModules[$mixOffset]) ? $this->arrModules[$mixOffset] : null;
+    }
+    
+    /**
+     * Countable interface
+     */
+    public function count() 
+    { 
+        return count($this->arrModules);
+    }
 }
 ?>
