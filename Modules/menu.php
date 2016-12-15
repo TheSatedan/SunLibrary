@@ -1,39 +1,26 @@
 <?php
 /**
- * Menu module.
+ * Manage Menus Throughout the website.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
  * @version         1.0.1               2016-12-13 16:12:47 SM:  Uses Database class.
+ * @version         1.1.0               2016-12-15 08:34:56 SM:  Uses SunLibraryModule.
  */
-error_reporting ( E_ALL );
-ini_set ( 'display_errors', '1' );
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class menu extends SunLibraryModule
 {
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-$specialsClass = new menu ($dbConnection);
-$specialsClass->switchMode ();
-
-class menu {
-	protected $dbConnection;
 	private $setPostID;
 	private $setGetID;
-	public static $moduleDescription = 'Manage Menus Throughout the website.';
-	public static $moduleAuthor = 'Andrew Jeffries';
-	public static $moduleVersion = '0.1';
 	
-	function __construct(mysqli $dbConnection) {
-		$this->dbConnection = $dbConnection;
-		
-		$this->setPostID = filter_input ( INPUT_POST, 'moduleID' );
-		$this->setGetID = filter_input ( INPUT_GET, 'moduleID' );
+	function __construct(mysqli $dbConnection)
+	{
+		$this->setPostID = filter_input(INPUT_POST, 'moduleID');
+		$this->setGetID = filter_input(INPUT_GET, 'moduleID');
+		parent::__construct($dbConnection);
 	}
 	
 	public function menu()
@@ -44,7 +31,7 @@ class menu {
 		echo '<tr><td colspan=2>';
 		
 		echo '<table cellpadding=5>';
-		$stmt = $this->dbConnection->prepare("SELECT DISTINCT menuLocation FROM menu ORDER BY menuLocation DESC");
+		$stmt = $this->objDB->prepare("SELECT DISTINCT menuLocation FROM menu ORDER BY menuLocation DESC");
         $stmt->execute();
 
         $stmt->bind_result($menuLocation);
@@ -60,42 +47,36 @@ class menu {
 		echo '<tr><td width=15%>';
 		
 		echo '<table>';
-		$stmt = $this->dbConnection->prepare("SELECT pageName FROM pages");
+		$stmt = $this->objDB->prepare("SELECT pageName FROM pages");
         $stmt->execute();
 
         $stmt->bind_result($pageName);
 
-        while ($checkRow = $stmt->fetch()) {
-
-
+        while ($checkRow = $stmt->fetch())
+        {
             echo '<tr><td width="100"> <input type="checkbox" name="'. $pageName.'" value="Yes"> ' . $pageName . '</td></tr>';
         }
 		echo '</table>';
-        
         echo '</td><td>';
-
+        
         echo '<table>';
-        $stmt = $this->dbConnection->prepare("SELECT menuName FROM menu WHERE menuLocation='$getMenuLocation' ORDER BY menuOrder");
+        $stmt = $this->objDB->prepare("SELECT menuName FROM menu WHERE menuLocation='$getMenuLocation' ORDER BY menuOrder");
         $stmt->execute();
         
         $stmt->bind_result($pageName);
         
-        while ($checkRow = $stmt->fetch()) {
-        
-        
-        	echo '<tr><td width="100"> <input type="checkbox" name="'. $pageName.'" value="Yes"> ' . $pageName . '</td></tr>';
+        while ($checkRow = $stmt->fetch())
+        {
+            echo '<tr><td width="100"> <input type="checkbox" name="'. $pageName.'" value="Yes"> ' . $pageName . '</td></tr>';
         }
         echo '</table>';
         
-        
-        
         echo '</td></tr>';
-		echo '</table>';
-		
+		echo '</table>';		
 	}
 	
-	public function switchMode() {
-	
+	public function switchMode()
+	{
 		$localAction = NULL;
 	
 		if (isset ( $this->setPostID )) {
@@ -128,5 +109,10 @@ class menu {
 				break;
 		}
 	}
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }	
 }
 ?>

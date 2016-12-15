@@ -1,61 +1,21 @@
 <?php
 /**
- * Cook Book class.
+ * Cookbook Display Form Information. Adding, Deleting and editing Recipes, themes and styles.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:18:33 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:18:33 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 15:06:52 SM:  Now uses SunLibraryModule.
  */
 
-class cookbook {
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-    protected $dbConnection;
-    const ModuleDescription = 'Cookbook Display Form Information. <br> Adding, Deleting and editing Recipes, themes and styles.';
-    const ModuleAuthor = 'Sunsetcoders Development Team.';
-    const ModuleVersion = '0.1';
-
-    // SM:  This accepts dbConnection as a parameter, but doesn't use it.    
-    function __construct($dbConnection) {
-
-        try
-        {
-            $this->dbConnection=Database::GetDBConnection();
-        }
-        catch(Exception $objException)
-        {
-            die($objException);
-        }
-
-        $val = mysqli_query($this->dbConnection, 'select 1 from `cookbook` LIMIT 1');
-
-        if ($val !== FALSE) {
-            
-        } else {
-
-            $createTable = $this->dbConnection->prepare("CREATE TABLE cookbook (cookbookID INT(11) AUTO_INCREMENT PRIMARY KEY, "
-                    . "userID INT(11) NOT NULL, "
-                    . "cookbookName VARCHAR(150) NOT NULL, "
-                    . "cookbookPrice VARCHAR(100) NOT NULL, "
-                    . "cookbookImage VARCHAR(255) NOT NULL, "
-                    . "cookbookDescription VARCHAR(5000) NOT NULL, "
-                    . "cookbookIngredient1 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient2 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient3 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient4 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient5 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient6 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient7 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient8 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient9 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient10 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient11 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient12 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient13 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient14 VARCHAR(255) NOT NULL, "
-                    . "cookbookIngredient15 VARCHAR(255) NOT NULL ) ");
-            $createTable->execute();
-            $createTable->close();
-        }
+class cookbook extends SunLibraryModule
+{
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
     public function cookbook() {
@@ -64,7 +24,7 @@ class cookbook {
         echo '<table width=100% cellpadding=10 cellspacing=0 border=0>';
         echo '<tr class="tableTop"><td>Recipe Name</td><td width=260>Recipe Uploader</td></tr>';
         echo '<tr><td colspan=2>&nbsp;</td></tr>';
-        $stmt = $this->dbConnection->prepare("SELECT cookbookID, cookbookName, userFullName FROM cookbook INNER JOIN users ON users.userID=cookbook.userID");
+        $stmt = $this->objDB->prepare("SELECT cookbookID, cookbookName, userFullName FROM cookbook INNER JOIN users ON users.userID=cookbook.userID");
         $stmt->execute();
 
         $stmt->bind_result($cookbookID, $cookbookName, $userFullName);
@@ -143,13 +103,13 @@ class cookbook {
             $query = "UPDATE cookbook SET cookbookName=?, cookbookIngredient1=?, cookbookIngredient2=?, cookbookIngredient3=?, cookbookIngredient4=?, cookbookIngredient5=?, cookbookIngredient6=?, cookbookIngredient7=?, cookbookIngredient8=?, cookbookIngredient9=?, cookbookIngredient10=?, cookbookIngredient11=?, cookbookDescription=? WHERE cookbookID=?";
         }
 
-        $stmt = $this->dbConnection->prepare($query);
+        $stmt = $this->objDB->prepare($query);
 
         if ($parm == 2)
             $stmt->bind_param('sssssssssssssi', $cookbookName, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookDescription, $cookbookID);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -164,7 +124,7 @@ class cookbook {
     public function editRecipe() {
         $cookbookID = filter_input(INPUT_GET, 'cookbookID');
 
-        if ($stmt = $this->dbConnection->prepare("SELECT cookbookName, cookbookImage, cookbookIngredient1, cookbookIngredient2, cookbookIngredient3, cookbookIngredient4, cookbookIngredient5, cookbookIngredient6, cookbookIngredient7, cookbookIngredient8, cookbookIngredient9, cookbookIngredient10, cookbookIngredient11, cookbookDescription FROM cookbook WHERE cookbookID=? ")) {
+        if ($stmt = $this->objDB->prepare("SELECT cookbookName, cookbookImage, cookbookIngredient1, cookbookIngredient2, cookbookIngredient3, cookbookIngredient4, cookbookIngredient5, cookbookIngredient6, cookbookIngredient7, cookbookIngredient8, cookbookIngredient9, cookbookIngredient10, cookbookIngredient11, cookbookDescription FROM cookbook WHERE cookbookID=? ")) {
 
             $stmt->bind_param("i", $cookbookID);
             $stmt->execute();
@@ -337,29 +297,29 @@ class cookbook {
         
         $cookbookImage = basename($_FILES["fileToUpload"]["name"]);
 
-        $stmt = $this->dbConnection->prepare("INSERT INTO cookbook (userID, 
-				
-				cookbookName,
-				cookbookImage,
-				cookbookDescription,
-				cookbookIngredient1,
-				cookbookIngredient2,
-				cookbookIngredient3,
-				cookbookIngredient4,
-				cookbookIngredient5,
-				cookbookIngredient6,
-				cookbookIngredient7,
-				cookbookIngredient8,
-				cookbookIngredient9,
-				cookbookIngredient10,
-				cookbookIngredient11,
-				cookbookIngredient12,
-				cookbookIngredient13,
-				cookbookIngredient14,
-				cookbookIngredient15
-				
-				
-				) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $stmt = $this->objDB->prepare("INSERT INTO cookbook
+        (
+            userID, 
+			cookbookName,
+			cookbookImage,
+			cookbookDescription,
+			cookbookIngredient1,
+			cookbookIngredient2,
+			cookbookIngredient3,
+			cookbookIngredient4,
+			cookbookIngredient5,
+			cookbookIngredient6,
+			cookbookIngredient7,
+			cookbookIngredient8,
+			cookbookIngredient9,
+			cookbookIngredient10,
+			cookbookIngredient11,
+			cookbookIngredient12,
+			cookbookIngredient13,
+			cookbookIngredient14,
+			cookbookIngredient15				
+        )
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
         $stmt->bind_param('issssssssssssssssss', $userID, $cookbookName, $cookbookImage, $cookbookDescription, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookIngredient12, $cookbookIngredient13, $cookbookIngredient14, $cookbookIngredient15);
 
@@ -374,11 +334,11 @@ class cookbook {
         $resourceLink = filter_input(INPUT_POST, 'resourceLink');
         $cookbookID = filter_input(INPUT_POST, 'cookbookID');
 
-        $stmt = $this->dbConnection->prepare("UPDATE cookbook SET resourceName=?, resourceLink=? WHERE cookbookID=?");
+        $stmt = $this->objDB->prepare("UPDATE cookbook SET resourceName=?, resourceLink=? WHERE cookbookID=?");
         $stmt->bind_param('ssi', $resourceName, $resourceLink, $cookbookID);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -394,7 +354,7 @@ class cookbook {
         
         $getID = filter_input(INPUT_GET, 'cookbookID');
 
-        $stmt = $this->dbConnection->prepare("DELETE FROM cookbook WHERE cookbookID = ?");
+        $stmt = $this->objDB->prepare("DELETE FROM cookbook WHERE cookbookID = ?");
         $stmt->bind_param('i', $getID);
         $stmt->execute();
         $stmt->close();
@@ -403,5 +363,42 @@ class cookbook {
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Cookbook">';
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `cookbook` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE cookbook (cookbookID INT(11) AUTO_INCREMENT PRIMARY KEY, "
+                . "userID INT(11) NOT NULL, "
+                . "cookbookName VARCHAR(150) NOT NULL, "
+                . "cookbookPrice VARCHAR(100) NOT NULL, "
+                . "cookbookImage VARCHAR(255) NOT NULL, "
+                . "cookbookDescription VARCHAR(5000) NOT NULL, "
+                . "cookbookIngredient1 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient2 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient3 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient4 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient5 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient6 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient7 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient8 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient9 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient10 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient11 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient12 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient13 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient14 VARCHAR(255) NOT NULL, "
+                . "cookbookIngredient15 VARCHAR(255) NOT NULL ) ");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>

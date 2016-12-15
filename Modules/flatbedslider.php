@@ -2,45 +2,29 @@
 /**
  * Flat bed slider.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:24:29 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
+ * @version         1.0.1               2016-12-13 16:24:29 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:46:48 SM:  Uses SunLibraryModule.
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class flatbedslider extends SunLibraryModule
 {
-    $dbTriConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `flatbedslider` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE flatbedslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class flatbedslider {
-
-    protected $dbConnection;
-
-    function __construct($dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+    function __construct($dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function flatbedslider() {
-        
+    public function flatbedslider()
+    {
+        //    
     }
 
-    public function uploadFile() {
-
+    public function uploadFile()
+    {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $target_filename = basename($_FILES["fileToUpload"]["name"]);
@@ -96,11 +80,11 @@ class flatbedslider {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
+        $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -112,39 +96,57 @@ class flatbedslider {
         echo '<meta http-equiv="refresh" content="1;url=?id=FlatbedSlider">';
     }
 
+    public function renderCustomJavaScript()
+    {
+?>
+        $("#slideshow > div:gt(0)").hide();
+        setInterval(function () {
+            $('#slideshow > div:first')
+            .fadeOut(2000)
+            .next()
+            .fadeIn(2000)
+            .end()
+            .appendTo('#slideshow');
+         }, 5000);
+<?php
+    }
+
     public function callToFunction() {
-        ?>
-        <script>
-            $("#slideshow > div:gt(0)").hide();
-
-            setInterval(function () {
-                $('#slideshow > div:first')
-                        .fadeOut(2000)
-                        .next()
-                        .fadeIn(2000)
-                        .end()
-                        .appendTo('#slideshow');
-            }, 5000);
-
-        </script>
+?>
         <div id="flatbed-background">
-                <div id="slideshow">
+            <div id="slideshow">
+<?php
+                $leftRef = $this->objBD->prepare("SELECT imageToSlide FROM flatbedslider ORDER BY sliderOrder");
+                $leftRef->execute();
 
-                    <?php
-                    $leftRef = $this->dbConnection->prepare("SELECT imageToSlide FROM flatbedslider ORDER BY sliderOrder");
-                    $leftRef->execute();
+                $leftRef->bind_result($imageToSlide);
 
-                    $leftRef->bind_result($imageToSlide);
+                while ($checkRow = $leftRef->fetch()) {
 
-                    while ($checkRow = $leftRef->fetch()) {
-
-                        echo '<div><img src="' . IMAGE_PATH.'/'.$imageToSlide . '" height=280></div>';
-                    }
-                    $leftRef->close();
-                    ?>
-                </div>
+                    echo '<div><img src="' . IMAGE_PATH.'/'.$imageToSlide . '" height=280></div>';
+                }
+                $leftRef->close();
+?>
+            </div>
         </div>
         <?php
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `flatbedslider` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE flatbedslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }

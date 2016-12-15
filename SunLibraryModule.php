@@ -4,6 +4,7 @@
  *
  * @author          Simon Mitchell <kartano@gmail.com>
  * @version         1.0.0               2016-12-14 15:14:53 SM:  Prototype
+ * @version         1.1.0               2016-12-15 08:32:18 SM:  switchMode is now part of the footprint.
  */
 
 abstract class SunLibraryModule
@@ -14,6 +15,7 @@ abstract class SunLibraryModule
     {
         $this->objDB=$objDB;
         $this->assertTablesExist();
+        $this->switchMode();
     }
     
     public function renderHeaderLinks()
@@ -22,6 +24,11 @@ abstract class SunLibraryModule
     }
     
     public function renderCustomJavaScript()
+    {
+        //
+    }
+    
+    public function documentReadyJavaScript()
     {
         //
     }
@@ -41,12 +48,34 @@ abstract class SunLibraryModule
         return 'unknown';
     }
     
+    public function getFileAttributes()
+    {
+        return null;
+    }
+    
+    public function switchMode()
+    {
+        // SM:  The default action is to do nothing.  If a class needs a switch mode, it should override this method
+        //      and put the necessary code there.
+    }    
     protected function readVersionFromFile($txtFile)
     {
-        $txtVersion='unknown';
+    }
+}
+
+final class FileAttributes
+{
+    public $txtVersionNumber;
+    public $txtAuthor;
+    public $txtVersion;
+    public $txtVersionNotes;
+    
+    public function __construc($txtFile)
+    {
+        $this->txtVersion='unknown';
         $hdlFile=@fopen($txtFile,r);
         if ($hdlFile===false)
-            return $txtVersion;
+            throw new InvalidArgumentException("The module file $txtFile could not be opened for reading.");
         $blnProcessing=true;
         $lngMaxVersion=0;
         while($blnProcessing)
@@ -73,10 +102,31 @@ abstract class SunLibraryModule
                         $lngMaxVersion=$lngVersion;
                     }
                 }
+
+                //--------------------------------------------------------------------------------------------------------------------------
+                // SM:  Look for the description.  This should be an asterix, following by random chars.
+                //      A description can take several lines.  We read it until we hit a line with an @tag indicated we are
+                //      Looking at other attributes.
+                //      Descripion lines should start with an asterix, and aside from the description body, there should be NO phpdoc tags here.
+                //--------------------------------------------------------------------------------------------------------------------------
+                if (stripos('*',$txtLine)>0 && stripos('@',$txtLine,4)==0)
+                {
+                    while (true)
+                    {
+                        $txtLine=fgets($hdlFile, 4096);
+                        if ($txtLine===false)
+                            $blnProcessing=false;
+                        elseif (stripos($txtLine,'*/') > 0)
+                            $blnProcessing=false;
+                        $lngStart=strpos('*',$txtLine);
+                        [^*]+[a-zA-Z0-9\(\)]*
+                        $this->txtDescription+=trim(substr());
+                }
             }
         }
         fclose($hdlFile);
         return $txtVersion;
+        
     }
 }
 ?>

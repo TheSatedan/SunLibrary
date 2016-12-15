@@ -2,51 +2,25 @@
 /**
  * Quotes module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:30:26 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:30:26 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:18:31 SM:  Uses SunLibraryModule.
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class TransportQuote extends SunLibraryModule
 {
-    $dbTriConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-// SM:  We might want to reconsider this in future - it is dangerous to use a connection that has super user priviledges to
-//      create tables etc through a live web site.  Maybe consider a separate "config" script instead - execute once on install,
-//      then remove the script?
-/*
- * The Following Snippet is to insert the module table into the mysqli table. 
- */
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `TransportQuote` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-    $createTable = $dbTriConnection->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class TransportQuote {
-
-    protected $dbConnection;
-
     function __construct(mysqli $dbConnection) {
 
-        $this->dbConnection = $dbConnection;
+        parent::__construct($dbConnection);
     }
 
-    public function TransportQuote() {
-
-        /*
-         * This is prometheus Administrator output.
-         */
+    public function TransportQuote()
+    {
+        //
     }
 
     public function editContent() {
@@ -58,7 +32,7 @@ class TransportQuote {
         echo '<form method="POST" action="?id=team&&moduleID=UpdateContent">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($contentCode);
@@ -81,7 +55,7 @@ class TransportQuote {
         echo '<form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($contentCode);
@@ -154,11 +128,11 @@ class TransportQuote {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
+        $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -175,7 +149,7 @@ class TransportQuote {
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
+        $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentDescription);
 
         if ($stmt === false) {
@@ -192,7 +166,7 @@ class TransportQuote {
     }
 
     public function callToFunction() {
-        ?>
+?>
         <div>Request a Quote</div>
         <div>Name</div>
         <div>Account Name</div>
@@ -214,8 +188,25 @@ class TransportQuote {
         <div>Larger Tyres</div>
         <div>If vehicle is lowered: Ride height</div>
         <div>Will there be personal effects stored in your vehicle *</div>
-        <?php
+<?php
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB('select 1 from `TransportQuote` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }
 ?>

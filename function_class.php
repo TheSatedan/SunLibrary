@@ -7,7 +7,11 @@
  * @todo            Turn modules into classes that extend an abstract parent class, so they can be loaded and executed cleanly and securely.
  * @version         1.0.0               2016-11-28 08:14:46 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:38:42 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 14:46:44 SM:  Has access to FileAttributeTools to obtain version number details.
  */
+
+require_once 'FileAttributeTools.php';
+use \FileAttributeTools;
 
 /**
  * Loads and handles modules for a given site.
@@ -24,10 +28,37 @@ function sunlibrary(ModuleManager $objModules)
         <div class="module-display">
             <ul>
 <?php
-                foreach($objModules as $objModule)
+                foreach($objModules as $txtName=>$objModule)
                 {
+                    $objFile=FileAttributeTools\FileAttributeTools("Modules\{$objModules[$txtName]}");
 ?>
-                    <li><code><?=get_class($objModule); ?> - version: <?=$objModule->getVersion();?></code></li>
+                    <li><code><?=get_class($objModule); ?></code></li>
+                    <ul>
+                        <li>Version: <?=$objFile->txtVersion;?></li>
+                        <li>Version Date: <?=$objFile->txtModifiedDate;?></li>
+                        <li>Version Comments: <?=$objFile->txtModifiedComments;?></li>
+                        <li>Description: <?=$objFile->txtDescription;?></li>
+                        <li>Authors</li>
+                        <ul>
+<?php
+                            foreach($objFile->arrAuthor as $txtEmail=>$txtAuthor)
+                            {
+                                if (is_integer($txtEmail))
+                                {
+?>
+                                    <li><?=$txtAuthor;?></li>
+<?php
+                                }
+                                else
+                                {
+?>
+                                    <li><?=$txtAuthor;?> - Email: <?=$txtEmail;?></li>
+<?php
+                                }
+                            }
+?>
+                        </ul>
+                    </ul>
 <?php
                 }
 ?>
@@ -51,8 +82,10 @@ function sunlibrary(ModuleManager $objModules)
 
 final class ModuleManager implements Iterator,ArrayAccess,Countable
 {
+    /** @var array $arrModules A collection of module names that we have loaded. */
     protected $arrModules=array();
     
+    /** @var int $lngPosition A pointer variable for use when travering this object with foreach.  Part of the Iterator inter */
     protected $lngPosition;
     
     /**

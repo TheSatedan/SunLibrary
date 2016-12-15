@@ -2,38 +2,25 @@
 /**
  * Media module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:26:23 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:26:23 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:38:08 SM:  Uses SunLibraryModule.
  */
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-try
+class specials extends SunLibraryModule
 {
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-$specialsClass = new specials($dbConnection);
-$specialsClass->switchMode();
-
-class specials
-{
-	protected $dbConnection;
 	private $setPostID;
 	private $setGetID;
 	
-	function __construct($dbConnection) {
-	
-		$this->dbConnection = $dbConnection;
-	
+	function __construct($dbConnection)
+	{
 		$this->setPostID = filter_input ( INPUT_POST, 'moduleID' );
 		$this->setGetID = filter_input ( INPUT_GET, 'moduleID' );
+		parent::__construct($dbConnection);
 	}
   
 	public function showMediaFiles()
@@ -65,8 +52,7 @@ class specials
 		echo '</table>';
 		
 		echo '</td></tr>';
-		echo '</table>';
-		
+		echo '</table>';	
 	}
 	
 	private function deleteMedia()
@@ -77,7 +63,6 @@ class specials
 		
 		echo '<font color=black><b>Please Wait!!!!<br>';
 		echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Media">';
-		
 	}
 	
 	public function showMedia()
@@ -100,8 +85,6 @@ class specials
 		echo '</td></tr>';
 		echo '<tr><td><a class="redFont" href="web-settings.php?id=Media&&moduleID=DeleteMedia&&mediaName='.$getMediaName.'">Delete Image</a></td></tr>';
 		echo '</table>';
-		
-		
 	}
 	
 	private function uploadMedia()
@@ -168,14 +151,13 @@ class specials
 	
 		$localAction = NULL;
 	
-		if (isset ( $this->setPostID )) {
+		if (isset ( $this->setPostID ))
 			$localAction = $this->setPostID;
-		} elseif (isset ( $this->setGetID )) {
+		elseif (isset ( $this->setGetID ))
 			$localAction = urldecode ( $this->setGetID );
-		}
 	
-		Switch (strtoupper ( $localAction )) {
-	
+		Switch (strtoupper ( $localAction ))
+		{
 			case "DELETEMEDIA":
 				$this->deleteMedia();
 				break;
@@ -194,4 +176,9 @@ class specials
 		}
 	}
 	
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }	
 }
+?>

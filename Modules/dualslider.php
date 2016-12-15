@@ -2,79 +2,104 @@
 /**
  * Dual slider module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:20:27 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:20:27 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 14:56:07 SM:  Uses SunLibraryModule.
  */
-try
+
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+ 
+class dualslider extends SunLibraryModule
 {
-    $dbTriConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-$val = mysqli_query($dbTriConnection, 'select 1 from `dualslider` LIMIT 1');
-
-if ($val !== FALSE) {
-
-} else {
-
-    $createTable = $dbTriConnection->prepare("CREATE TABLE dualslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, sliderSide VARCHAR(100) NOT NULL, sliderImage VARCHAR(100) NOT NULL, sliderOrder DECIMAL(1,0) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class dualslider {
-
-    protected $dbConnection;
-    const ModuleDescription = 'Dual Slider Display. <br><br> Side bye Side Sliders displaying different slideshows.';
-    const ModuleAuthor = 'Sunsetcoders Development Team.';
-    const ModuleVersion = '0.1';
-    
-    function __construct($dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+    function __construct($dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function dualslider() {
-
-        echo '<table border=1 cellpadding=10>';
-        echo '<tr><td>Left</td><td>Right</td></tr>';
-        echo '<tr><td></td><td></td></tr>';
-        echo '<tr><td></td><td></td></tr>';
-        echo '<tr><td></td><td></td></tr>';
-        echo '<tr><td></td><td></td></tr>';
-        echo '</table>';
+    public function dualslider()
+    {
+?>
+        <table border="1" cellpadding="10">
+            <tbody>
+                <tr>
+                    <td>Left</td>
+                    <td>Right</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+<?php
     }
 
-    public function editImage() {
-
+    public function editImage() 
+    {
         $contentCode = filter_input(INPUT_GET, "ImageID");
-
         $query = "SELECT $contentCode FROM dualslider WHERE sliderID=? ";
-
-        echo '<form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->dbConnection->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Image Information: </h1></td></tr>';
-            echo '<tr><td><img src="../Images/' . $contentCode . '"></td></tr>';
-            echo '<tr><td><input type="hidden" name="MAX_FILE_SIZE" value="100000" /></td></tr>';
-            echo '<tr><td>Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload"></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+?>
+        <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+<?php
+            if ($stmt = $this->objDB->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Image Information: </h1>
+                            </td>
+                        </tr>';
+                        <tr>
+                            <td>
+                                <img src="../Images/<?=$contentCode;?>">
+                            </td>
+                        </tr>';
+                        <tr>
+                            <td>
+                                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
+                            </td>
+                        </tr>';
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function updateImage() {
-
+    public function updateImage()
+    {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $target_filename = basename($_FILES["fileToUpload"]["name"]);
@@ -134,7 +159,7 @@ class dualslider {
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -155,7 +180,7 @@ class dualslider {
         echo '<form method="POST" action="?id=Services&&moduleID=UpdateContent">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($contentCode);
@@ -178,7 +203,7 @@ class dualslider {
         $stmt->bind_param('s', $contentDescription);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -192,29 +217,6 @@ class dualslider {
 
     public function callToFunction() {
 ?>
-        <script>
-            $("#slideshow > div:gt(0)").hide();
-
-            setInterval(function () {
-                $('#slideshow > div:first')
-                .fadeOut(1000)
-                .next()
-                .fadeIn(1000)
-                .end()
-                .appendTo('#slideshow');
-                }, 3000);
-            $("#slideshow1 > div:gt(0)").hide();
-
-            setInterval(function () {
-                $('#slideshow1 > div:first')
-                .fadeOut(1000)
-                .next()
-                .fadeIn(1000)
-                .end()
-                .appendTo('#slideshow1');
-                }, 3000);
-        </script>
-
         <div id="slider-content">
             <div class="body-content"> 
             <a name="The Studios"></a>
@@ -223,7 +225,7 @@ class dualslider {
                     <div id="slideshow">
 
                         <?php
-                        $leftRef = $this->dbConnection->prepare("SELECT sliderImage FROM dualslider WHERE sliderSide='Left' ORDER BY sliderOrder");
+                        $leftRef = $this->objDB->prepare("SELECT sliderImage FROM dualslider WHERE sliderSide='Left' ORDER BY sliderOrder");
                         $leftRef->execute();
 
                         $leftRef->bind_result($sliderImage);
@@ -240,7 +242,7 @@ class dualslider {
                     <div id="slideshow1">
 
                         <?php
-                        $rightRef = $this->dbConnection->prepare("SELECT sliderImage FROM dualslider WHERE sliderSide='Right' ORDER BY sliderOrder");
+                        $rightRef = $this->objDB->prepare("SELECT sliderImage FROM dualslider WHERE sliderSide='Right' ORDER BY sliderOrder");
                         $rightRef->execute();
 
                         $rightRef->bind_result($sliderImage);
@@ -257,5 +259,49 @@ class dualslider {
         <?php
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `dualslider` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE dualslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, sliderSide VARCHAR(100) NOT NULL, sliderImage VARCHAR(100) NOT NULL, sliderOrder DECIMAL(1,0) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function documentReadyJavaScript()
+    {
+?>
+        $("#slideshow > div:gt(0)").hide();
+        setInterval(function ()
+        {
+            $('#slideshow > div:first')
+            .fadeOut(1000)
+            .next()
+            .fadeIn(1000)
+            .end()
+            .appendTo('#slideshow');
+        },3000);
+        
+        $("#slideshow1 > div:gt(0)").hide();
+        setInterval(function ()
+        {
+            $('#slideshow1 > div:first')
+            .fadeOut(1000)
+            .next()
+            .fadeIn(1000)
+            .end()
+            .appendTo('#slideshow1');
+        },3000);
+<?php
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>

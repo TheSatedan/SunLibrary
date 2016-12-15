@@ -2,7 +2,8 @@
 /**
  * Testimonials page.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:33:48 SM:  Uses database.
  * @version         1.1.0               2016-12-14 16:41:55 SM:  Uses SunLibraryModule.

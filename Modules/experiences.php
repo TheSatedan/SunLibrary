@@ -1,41 +1,30 @@
 <?php
 /**
- * Experiences module.
+ * Blog System. <br><br> Displaying blog entries in different formats.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:22:52 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:22:52 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:55:27 SM:  Uses SunLibraryModule.
  */
 
-try
-{
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-class experiences {
-
-    protected $dbConnection;
-    const ModuleDescription = 'Blog System. <br><br> Displaying blog entries in different formats.';
-    const ModuleAuthor = 'Sunsetcoders Development Team.';
-    const ModuleVersion = '0.1';
-    
-    
-    function __construct($dbConnection) {
-       
-        $this->dbConnection = $dbConnection;
+class experiences extends SunLibraryModule
+{       
+    function __construct($dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
-    public function experiences() {
-        
+    public function experiences()
+    {    
         echo '<table width=100% cellpadding=10 cellspacing=0 border=0>';
         echo '<tr><td>Experience Information <a href="?id=Experiences&&moduleID=AddExperience"><button>Add New</button></td></tr>';
         echo '<tr><td colspan=3>&nbsp;</td></tr>';
         echo '<tr class="tableTop"><td>Identifer</td><td>Member Name</td><td>Date</td></tr>';
-        $stmt = $this->dbConnection->prepare("SELECT blogID, blogSubject, blogDate, userFullName FROM blog INNER JOIN users ON blog.userID=users.userID");
+        $stmt = $this->objDB->prepare("SELECT blogID, blogSubject, blogDate, userFullName FROM blog INNER JOIN users ON blog.userID=users.userID");
         $stmt->execute();
 
         $stmt->bind_result($blogID, $blogSubject, $blogDate, $userFullName);
@@ -58,7 +47,7 @@ class experiences {
         echo '<tr><td>Experience User </td><td>';
         
         echo '<select name="userID">';
-        $stmt = $this->dbConnection->prepare("SELECT userID, userFullName FROM users");
+        $stmt = $this->objDB->prepare("SELECT userID, userFullName FROM users");
         $stmt->execute();
 
         $stmt->bind_result($userID, $userFullName);
@@ -82,7 +71,7 @@ class experiences {
         
         $getID = filter_input(INPUT_GET, 'blogID');
 
-        $stmt = $this->dbConnection->prepare("DELETE FROM blog WHERE blogID = ?");
+        $stmt = $this->objDB->prepare("DELETE FROM blog WHERE blogID = ?");
         $stmt->bind_param('i', $getID);
         $stmt->execute();
         $stmt->close();
@@ -101,7 +90,7 @@ class experiences {
 
         $blogDate = datReturn($getDate);
         
-        $stmt = $this->dbConnection->prepare("INSERT INTO blog (userID, blogSubject, blogDate, blogBody, blogAnonymous) VALUES (?,?,?,?,?)");
+        $stmt = $this->objDB->prepare("INSERT INTO blog (userID, blogSubject, blogDate, blogBody, blogAnonymous) VALUES (?,?,?,?,?)");
 
         $stmt->bind_param('issss', $userID, $blogSubject, $blogDate, $blogBody, $blogAnonymous);
 
@@ -111,14 +100,21 @@ class experiences {
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Experiences">';
     }
 
-    public function editExperience() {
-        ?>
+    public function renderHeaderLinks()
+    {
+?>
         <script type="text/javascript" src="http://js.nicedit.com/nicEdit-latest.js"></script>
-        <script type="text/javascript"> bkLib.onDomLoaded(function () {
-                nicEditors.allTextAreas()
-            });</script>
-        <?php
+<?php
+    }
 
+    public function documentReadyJavaScript()
+    {
+?>
+        nicEditors.allTextAreas()
+<?php
+  }
+
+    public function editExperience() {
         $blogID = filter_input(INPUT_GET, 'blogID');
         $setServiceID = filter_input(INPUT_GET, 'serviceID');
 
@@ -127,7 +123,7 @@ class experiences {
         echo '<input type="hidden" name="blogID" value="' . $blogID . '">';
 
 
-        if ($stmt = $this->dbConnection->prepare("SELECT blogID, userFullName, blogSubject, blogDate, blogBody, blogAnonymous FROM blog INNER JOIN users ON blog.userID=users.userID WHERE blogID=? ")) {
+        if ($stmt = $this->objDB->prepare("SELECT blogID, userFullName, blogSubject, blogDate, blogBody, blogAnonymous FROM blog INNER JOIN users ON blog.userID=users.userID WHERE blogID=? ")) {
 
             $stmt->bind_param("i", $blogID);
             $stmt->execute();
@@ -164,20 +160,21 @@ class experiences {
         $blogSubject= filter_input(INPUT_POST, 'blogSubject');
         $showName = filter_input(INPUT_POST, 'blogAnonymous');
         
-        $stmt = $this->dbConnection->prepare("UPDATE blog SET blogBody=?,blogSubject=?, blogAnonymous=? WHERE blogID=?");
+        $stmt = $this->objDB->prepare("UPDATE blog SET blogBody=?,blogSubject=?, blogAnonymous=? WHERE blogID=?");
         $stmt->bind_param('sssi', $blogBody, $blogSubject, $showName, $blogID);
 
-        if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
-        }
-
+        if ($stmt === false)
+            trigger_error($this->objDB->error, E_USER_ERROR);
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
         echo '<font color=black><b>Experience Information Updated <br><br> Please Wait!!!!<br>';
         echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Experiences">';
     }
+    
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>

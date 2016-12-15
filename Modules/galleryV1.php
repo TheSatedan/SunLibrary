@@ -2,37 +2,21 @@
 /**
  * Gallery - version 1.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
  * @todo            Class uses a global variable for the DB, but also takes a DB connection in contructor args.  Should probably just use the constructor arg.
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:25:11 SM: Uses database.
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
+ * @version         1.0.1               2016-12-13 16:25:11 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:42:00 SM:  Uses SunLibraryModule.
  */
-try
-{
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
-class gallery
+class gallery extends SunLibraryModule
 {
-	#const ModuleDescription = 'Add & Edit Images in gallery.';
-	#const ModuleAuthor = 'Sunsetcoders Development Team.';
-	#const ModuleVersion = '1.0';
-	
-	protected $dbConnection;
-	
 	function __construct(mysqli $dbConnection)
 	{
-		global $dbConnection;
-		$this->dbConnection = $dbConnection;
-
-		
+	    parent::__construct($dbConnection);
 	}
 	
 	public function addimage()
@@ -42,8 +26,6 @@ class gallery
 		echo '<tr><td>Add Image</td></tr>';
 		echo 'Select image to upload:';
 		echo '<input type="file" name="fileToUpload" id="fileToUpload">';
-
-		
 
 		echo '<tr><td>Add Supporter</td></tr>';
 		echo '<tr><td>Add Supporter</td></tr>';
@@ -82,33 +64,32 @@ class gallery
 			$uploadOk = 0;
 		}
 		// Allow certain file formats
-		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-				&& $imageFileType != "gif" ) {
-					echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-					$uploadOk = 0;
-				}
-				// Check if $uploadOk is set to 0 by an error
-				if ($uploadOk == 0) {
-					echo "Sorry, your file was not uploaded.";
-					// if everything is ok, try to upload file
-				} else {
-					if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-						echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
-					} else {
-						echo "Sorry, there was an error uploading your file.";
-					}
-				}
-				
-	}
+		if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif" )
+		{
+            echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+			$uploadOk = 0;
+        }
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0)
+            echo "Sorry, your file was not uploaded.";
+		// if everything is ok, try to upload file
+         else
+         {
+            if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
+                echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
+            else
+                echo "Sorry, there was an error uploading your file.";
+          }
+    }
 	
 	public function editImage()
 	{
-		
+		//
 	}
 	
 	public function updateImage()
 	{
-		
+		//
 	}
 	
 	public function gallery()
@@ -135,9 +116,12 @@ class gallery
 		}
 		
 		echo '</tr>';
-		echo '</table>';
-		
+		echo '</table>';	
 	}
-	
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }	
 }
 ?>

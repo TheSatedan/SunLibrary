@@ -1,49 +1,21 @@
 <?php
 /**
- * Contact module.
+ * Creating and Editing Contact Form Information.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:17:20 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:17:20 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 15:10:40 SM:  Uses SunLibraryModule.
  */
 
-try
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class contact extends SunLibraryModule
 {
-    $dbConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-echo '<link rel="stylesheet" type="text/css" href="style.css">';
-
-// SM:  This will always return '1' in a reuslt set, as long as there is a CONTACT table in the current schema - is that what it should be doing?
-$val=$dbConnection->query('select 1 from `contact` LIMIT 1');
-
-if ($val !== FALSE) {
-    
-} else {
-
-    $createTable = $dbConnection->prepare("CREATE TABLE contact (contactID INT(11) AUTO_INCREMENT PRIMARY KEY, contactSubject VARCHAR(10000) NOT NULL, contactOrder DECIMAL(4,2) NOT NULL ) ");
-    $createTable->execute();
-    $createTable->close();
-}
-
-// $bodyContent = add_snippet_connection ( '[ShowPortfolio]', 'showPortfolio', $pageContent);
-
-class contact {
-
-    protected $dbConnection;
-    const ModuleDescription = 'Creating and Editing Contact Form Information.';
-    const ModuleAuthor = 'Sunsetcoders Development Team.';
-    const ModuleVersion = '0.1';
-    
-    function __construct($dbConnection) {
-
-        global $dbConnection;
-
-        $this->dbConnection = $dbConnection;
+    function __construct($dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
     function contact() {
@@ -57,7 +29,7 @@ class contact {
 
         echo '<table border=1 width=100% cellpadding=10>';
 
-        $stmt = $this->dbConnection->prepare("SELECT contactID, contactSubject FROM contact ORDER BY contactOrder ");
+        $stmt = $this->objDB->prepare("SELECT contactID, contactSubject FROM contact ORDER BY contactOrder ");
         $stmt->execute();
 
         $stmt->bind_result($contactID, $contactSubject);
@@ -78,7 +50,7 @@ class contact {
         $setName = filter_input(INPUT_POST, 'subjectName');
         $setOrder = 1;
 
-        $stmt = $this->dbConnection->prepare("INSERT INTO contact (contactSubject, contactOrder) VALUES (?,?)");
+        $stmt = $this->objDB->prepare("INSERT INTO contact (contactSubject, contactOrder) VALUES (?,?)");
 
         $stmt->bind_param('si', $setName, $setOrder);
 
@@ -92,7 +64,7 @@ class contact {
 
         $getID = filter_input(INPUT_GET, 'contactID');
 
-        if ($stmt = $this->dbConnection->prepare("SELECT contactSubject FROM contact WHERE contactID=? ")) {
+        if ($stmt = $this->objDB->prepare("SELECT contactSubject FROM contact WHERE contactID=? ")) {
 
             $stmt->bind_param("i", $getID);
             $stmt->execute();
@@ -120,7 +92,7 @@ class contact {
     {
         $getID = filter_input(INPUT_GET, 'contactID');
 
-        $stmt = $this->dbConnection->prepare("DELETE FROM contact WHERE contactID = ?");
+        $stmt = $this->objDB->prepare("DELETE FROM contact WHERE contactID = ?");
         $stmt->bind_param('i', $getID);
         $stmt->execute();
         $stmt->close();
@@ -134,11 +106,11 @@ class contact {
         $getName = filter_input(INPUT_POST, 'contactName');
         $getID = filter_input(INPUT_POST, 'contactID');
 
-        $stmt = $this->dbConnection->prepare("UPDATE contact SET contactSubject=? WHERE contactID=?");
+        $stmt = $this->objDB->prepare("UPDATE contact SET contactSubject=? WHERE contactID=?");
         $stmt->bind_param('si', $getName, $getID);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -150,5 +122,29 @@ class contact {
         echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Contact">';
     }
 
+    public function renderHeaderLinks()
+    {
+?>
+        <link rel="stylesheet" type="text/css" href="style.css">
+<?php
+    }
+
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `contact` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE contact (contactID INT(11) AUTO_INCREMENT PRIMARY KEY, contactSubject VARCHAR(10000) NOT NULL, contactOrder DECIMAL(4,2) NOT NULL ) ");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }
 ?>

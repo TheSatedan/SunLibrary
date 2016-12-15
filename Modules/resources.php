@@ -2,7 +2,8 @@
 /**
  * Resources module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
  * @todo            Change class to use db instance passed to it, rather than a global var.
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:31:24 SM:  Uses database.

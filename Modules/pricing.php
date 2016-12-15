@@ -2,37 +2,20 @@
 /**
  * Pricing module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:28:15 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
+ * @version         1.0.1               2016-12-13 16:28:15 SM:  Uses databas.
+ * @version         1.1.0               2016-12-15 08:28:42 SM:  Uses SunLibraryModule.
  */
-try
+
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class pricing extends SunLibraryModule
 {
-    $dbTriConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-
-$val = mysqli_query($dbTriConnection, 'select 1 from `pricing` LIMIT 1');
-
-if ($val !== FALSE) {
-
-} else {
-
-    $createTable = $dbTriConnection->prepare("CREATE TABLE pricing (pricingID INT(11) AUTO_INCREMENT PRIMARY KEY, pricingContent VARCHAR(4000) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class pricing {
-
-    protected $dbConnection;
-
-    function __construct(mysqli $dbConnection) {
-
-        $this->dbConnection = $dbConnection;
+    function __construct(mysqli $dbConnection)
+    {
+        parent::__construct($dbConnection);
     }
 
     public function pricing() {
@@ -41,7 +24,7 @@ class pricing {
 
         echo '<form method="POST" action="?id=Pricing&&moduleID=UpdateContent">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->execute();
             $stmt->bind_result($pricingContent);
@@ -59,11 +42,11 @@ class pricing {
 
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
 
-        $stmt = $this->dbConnection->prepare("UPDATE pricing SET pricingContent=? WHERE pricingID=1");
+        $stmt = $this->objDB->prepare("UPDATE pricing SET pricingContent=? WHERE pricingID=1");
         $stmt->bind_param('s', $contentDescription);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -83,7 +66,7 @@ class pricing {
                 <a name="Pricing"></a> 
                 <div class="pricing-text">
                     <?php
-                    $contentRef = $this->dbConnection->prepare("SELECT pricingContent FROM pricing WHERE pricingID=1");
+                    $contentRef = $this->objDB->prepare("SELECT pricingContent FROM pricing WHERE pricingID=1");
                     $contentRef->execute();
 
                     $contentRef->bind_result($pricingContent);
@@ -101,4 +84,21 @@ class pricing {
         <?php
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `pricing` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE pricing (pricingID INT(11) AUTO_INCREMENT PRIMARY KEY, pricingContent VARCHAR(4000) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
 }

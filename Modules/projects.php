@@ -2,36 +2,20 @@
 /**
  * Projects module.
  *
- * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
- * @version         1.0.0               2016-11-28 08:48:35 SM: Prototype
- * @version         1.0.1               2016-12-13 16:28:38 SM: Uses database.
+ * @author          Andrew Jeffries <andrew@sunsetcoders.com.au>
+ * @author          Simon Mitchell <kartano@gmail.com>
+ * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
+ * @version         1.0.1               2016-12-13 16:28:38 SM:  Uses database.
+ * @version         1.1.0               2016-12-15 08:25:03 SM:  Uses SunLibraryModule.
  */
-try
+
+require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+
+class projects extends SunLibraryModule
 {
-    $dbTriConnection=Database::GetDBConnection();
-}
-catch(Exception $objException)
-{
-    die($objException);
-}
-$val = mysqli_query($dbTriConnection, 'select 1 from `projects` LIMIT 1');
-
-if ($val !== FALSE) {
-
-} else {
-
-    $createTable = $dbTriConnection->prepare("CREATE TABLE projects (projectID INT(11) AUTO_INCREMENT PRIMARY KEY, projectSide VARCHAR(20) NOT NULL, projectContent VARCHAR(200) NOT NULL, projectOrder DECIMAL(1,0) NOT NULL)");
-    $createTable->execute();
-    $createTable->close();
-}
-
-class projects {
-
-    protected $dbConnection;
-
     function __construct(mysqli $dbConnection) {
 
-        $this->dbConnection = $dbConnection;
+        parent::__construct($dbConnection);
     }
 
     public function projects() {
@@ -42,7 +26,7 @@ class projects {
         echo '<tr><td colspan=3 bgcolor="262626"><font color="white">Music Studio</td></tr>';
         echo '<tr><td colspan=3><button><a href="?id=Projects&&moduleID=AddMusic">Add Music</a></button></td></tr>';
 
-        $leftRef = $this->dbConnection->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
+        $leftRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
         $leftRef->execute();
 
         $leftRef->bind_result($projectContent);
@@ -57,7 +41,7 @@ class projects {
         echo '<tr><td colspan=3 bgcolor="262626"><font color="white">Art Studio</td></tr>';
         echo '<tr><td colspan=3><button><a href="?id=Projects&&moduleID=AddImage">Add Artwork</a></button></td></tr>';
 
-        $rightRef = $this->dbConnection->prepare("SELECT projectID, projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
+        $rightRef = $this->objDB->prepare("SELECT projectID, projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
         $rightRef->execute();
 
         $rightRef->bind_result($projectID, $projectContent);
@@ -138,10 +122,10 @@ class projects {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("INSERT INTO projects (projectSide, projectContent, projectOrder) VALUES ('Right', '$contentImageName', '1')");
+        $stmt = $this->objDB->prepare("INSERT INTO projects (projectSide, projectContent, projectOrder) VALUES ('Right', '$contentImageName', '1')");
   
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -163,7 +147,7 @@ class projects {
         echo '<form action="?id=Projects&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
         echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
 
-        if ($stmt = $this->dbConnection->prepare($query)) {
+        if ($stmt = $this->objDB->prepare($query)) {
 
             $stmt->bind_param('i', $contentCode);
             $stmt->execute();
@@ -237,11 +221,11 @@ class projects {
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE projects SET $contentCode=? WHERE projectID=1");
+        $stmt = $this->objDB->prepare("UPDATE projects SET $contentCode=? WHERE projectID=1");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
+            trigger_error($this->objDB->error, E_USER_ERROR);
         }
 
         $status = $stmt->execute();
@@ -263,7 +247,7 @@ class projects {
 
 
                     <?php
-                    $leftRef = $this->dbConnection->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
+                    $leftRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
                     $leftRef->execute();
 
                     $leftRef->bind_result($projectContent);
@@ -274,7 +258,7 @@ class projects {
                         <div><?php echo $projectContent; ?></div>
                         <div>
                             <audio controls>
-                                <source src="Projects/<?php echo $projectContent; ?>" type="audio/mpeg">
+                                <source src="Projects/<?=$projectContent; ?>" type="audio/mpeg">
                                 Your browser does not support the audio element.';
                             </audio>
                         </div>
@@ -299,7 +283,7 @@ class projects {
                 <div class="project-right">
                     <div id="projectSlideshow">
                         <?php
-                        $rightRef = $this->dbConnection->prepare("SELECT projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
+                        $rightRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
                         $rightRef->execute();
 
                         $rightRef->bind_result($sliderImage);
@@ -316,5 +300,27 @@ class projects {
         <?php
     }
 
+    protected function assertTablesExist()
+    {
+        $objResult=$this->objDB->query('select 1 from `projects` LIMIT 1');
+        if ($objResult===false)
+        {
+            $createTable = $this->objDB->prepare("CREATE TABLE projects (projectID INT(11) AUTO_INCREMENT PRIMARY KEY, projectSide VARCHAR(20) NOT NULL, projectContent VARCHAR(200) NOT NULL, projectOrder DECIMAL(1,0) NOT NULL)");
+            $createTable->execute();
+            $createTable->close();
+        }
+        else
+            $objResult->free();
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }
+
+    public function getVersion()
+    {
+        return $this->readVersionFromFile(__FILE__);
+    }    
 }
 ?>
