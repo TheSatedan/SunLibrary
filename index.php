@@ -4,9 +4,10 @@
  *
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:12:35 SM:  Prototype
+ * @version         1.1.0               2016-12-15 16:17:53 SM:  Made use of the ModuleManager.
  */
-include ('auth.php');
-include ('function_class.php');
+include 'auth.php';
+include 'function_class.php';
 
 try
 {
@@ -23,6 +24,17 @@ catch(Exception $objException)
     <head>
         <title><?=PROJECT_TITLE;?></title>
         <meta name="viewport" content="width=device-width">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(function() {
+<?php
+                foreach($objModules as $objModule)
+                {
+                    $objModule->documentReadyJavaScript();
+                }
+?>
+            });
+        </script>
         <script type="text/javascript">
 <?php
             foreach($objModules as $objModule)

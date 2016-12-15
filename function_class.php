@@ -11,6 +11,7 @@
  */
 
 require_once 'FileAttributeTools.php';
+
 use \FileAttributeTools;
 
 /**
@@ -72,7 +73,6 @@ function sunlibrary(ModuleManager $objModules)
 ?>
         </div>
 <?php
-        $objModules->RenderAll();
     }
     catch(Exception $objException)
     {
