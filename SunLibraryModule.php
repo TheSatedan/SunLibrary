@@ -4,129 +4,117 @@
  *
  * @author          Simon Mitchell <kartano@gmail.com>
  * @version         1.0.0               2016-12-14 15:14:53 SM:  Prototype
- * @version         1.1.0               2016-12-15 08:32:18 SM:  switchMode is now part of the footprint.
+ * @version         1.1.0               2016-12-15 08:32:18 SM:  SwitchMode is now part of the footprint.
+ * @version         1.1.1               2016-12-16 17:11:27 SM:  Making use of the FileAttributes library.
  */
+
+use FileAttributes;
+require_once 'FileAttributeTools.php';
 
 abstract class SunLibraryModule
 {
     protected $objDB;
     
-    public function __construct(mysqli $objDB)
+    /**
+     * Constructor.
+     *
+     * @param \mysqli $objDB Connection to the database.
+     * @return void
+     */
+    public function __construct(\mysqli $objDB)
     {
         $this->objDB=$objDB;
+        
+        //--------------------------------------------------------------------------------------
+        // SM:  As soon as we instantiate this module, we assert that the table exists
+        //      and then switch through the current state to see what we need to do.
+        //--------------------------------------------------------------------------------------
+        
         $this->assertTablesExist();
         $this->switchMode();
     }
     
+    /**
+     * Render any links such as external JS or external CSS files that we might need.
+     * These are all rendered in the HEAD of the document.
+     *
+     * @return void
+     */
     public function renderHeaderLinks()
     {
         //
     }
     
+    /**
+     * Render any custom javascript a module may need, such as validation or functions for special effects.
+     * These are all rendered into the HEAD of the document within a SCRIPT tag.
+     *
+     * @return void
+     */
     public function renderCustomJavaScript()
     {
         //
     }
     
+    /**
+     * Render any custom javascript inside the document ready function.  Anything here will be called as soon as the DOM is loaded.
+     *
+     * @return void
+     */
     public function documentReadyJavaScript()
     {
         //
     }
     
+    /**
+     * The common entry point for all modules.
+     *
+     * @return void
+     */
     public function callToFunction()
     {
         //
     }
     
+    /**
+     * This function is used to assert that necessary tables for a given module exist.
+     *
+     * @return void
+     */
     protected function assertTablesExist()
     {
         //
     }
     
+    /**
+     * Returns the version of the module, based on the most recent version number inside the files docblock.
+     *
+     * @return string The full version of the module as read from its docblock.
+     */
     public function getVersion()
     {
         return 'unknown';
     }
     
-    public function getFileAttributes()
-    {
-        return null;
-    }
-    
+    /**
+     * Switch the mode of the module based on what the local action for the script is.
+     *
+     * @return void
+     */
     public function switchMode()
     {
-        // SM:  The default action is to do nothing.  If a class needs a switch mode, it should override this method
-        //      and put the necessary code there.
-    }    
+        //
+    }
+    
+    /**
+     * Helper function to retrieve the version number from a given file.
+     *
+     * @return string A string value with the full version number of the specified file.
+     */
     protected function readVersionFromFile($txtFile)
     {
-    }
-}
-
-final class FileAttributes
-{
-    public $txtVersionNumber;
-    public $txtAuthor;
-    public $txtVersion;
-    public $txtVersionNotes;
-    
-    public function __construc($txtFile)
-    {
-        $this->txtVersion='unknown';
-        $hdlFile=@fopen($txtFile,r);
-        if ($hdlFile===false)
-            throw new InvalidArgumentException("The module file $txtFile could not be opened for reading.");
-        $blnProcessing=true;
-        $lngMaxVersion=0;
-        while($blnProcessing)
-        {
-            $txtLine=fgets($hdlFile, 4096);
-            if ($txtLine===false)
-                $blnProcessing=false;
-            elseif (stripos($txtLine,'*/') > 0)
-                $blnProcessing=false;
-            else
-            {
-                //--------------------------------------------------------------------------------------------------------------------------
-                // SM:  Look for anything in the line from the file with a version number in the form 99.99.99 - this is the version number
-                //      from the docblock.  Track which version is largest and return that.
-                //--------------------------------------------------------------------------------------------------------------------------
-
-                $arrMatches=array();
-                if (preg_match ('/(\d+)\.(\d+)\.(\d+)/', $txtLine, $arrMatches))
-                {
-                    $lngVersion=1000000*intval($arrMatches[1])+1000*intval($arrMatches[2]) + intval($arrMatches[3]);
-                    if ($lngVersion > $lngMaxVersion)
-                    {
-                        $txtVersion=$arrMatches[0];
-                        $lngMaxVersion=$lngVersion;
-                    }
-                }
-
-                //--------------------------------------------------------------------------------------------------------------------------
-                // SM:  Look for the description.  This should be an asterix, following by random chars.
-                //      A description can take several lines.  We read it until we hit a line with an @tag indicated we are
-                //      Looking at other attributes.
-                //      Descripion lines should start with an asterix, and aside from the description body, there should be NO phpdoc tags here.
-                //--------------------------------------------------------------------------------------------------------------------------
-                if (stripos('*',$txtLine)>0 && stripos('@',$txtLine,4)==0)
-                {
-                    while (true)
-                    {
-                        $txtLine=fgets($hdlFile, 4096);
-                        if ($txtLine===false)
-                            $blnProcessing=false;
-                        elseif (stripos($txtLine,'*/') > 0)
-                            $blnProcessing=false;
-                        $lngStart=strpos('*',$txtLine);
-                        [^*]+[a-zA-Z0-9\(\)]*
-                        $this->txtDescription+=trim(substr());
-                }
-            }
-        }
-        fclose($hdlFile);
-        return $txtVersion;
-        
+        $objDetails=FileAttributes\FileAttributes($txtFile);
+        return $objDetails->txtVersion;
     }
 }
 ?>

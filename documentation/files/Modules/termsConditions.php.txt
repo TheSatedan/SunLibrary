@@ -7,74 +7,134 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:33:19 SM:  Uses database.
  * @version         1.1.0               2016-12-14 16:46:32 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 14:07:53 SM:  Fixed some tags, adjusted indentation, fixed bad DB refs, added doco.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Terms and conditions
+ */
 class termsConditions extends SunLibraryModule
 {
-
-    protected $dbConnection;
-
-    function __construct($dbConnection) {
-
+    /**
+     * {@inheritdoc}
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     * @return void
+     */
+    function __construct(mysqli $dbConnection)
+    {
         parent::__construct($dbConnection);
     }
 
-        public function termsConditions() {
-
+    /**
+     * Render terms and conditions.  THIS IS NOT THE CONSTRUCTOR.
+     *
+     * @return void
+     */
+    public function termsConditions()
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
-
         $query = "SELECT $contentCode FROM terms WHERE termID=1 ";
+?>
+        <form method="POST" action="?id=Terms&&moduleID=UpdateContent">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+<?php
 
-        echo '<form method="POST" action="?id=Terms&&moduleID=UpdateContent">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->objDB->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Content: </h1></td></tr>';
-            echo '<tr><td><textarea cols=100 rows=10 name="contentMatter">' . $contentCode . '</textarea></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+            if ($stmt = $this->objDB->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Content: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function editImage() {
-
+    /**
+     * Edit image
+     *
+     * @return void
+     */
+    public function editImage()
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
-
         $query = "SELECT $contentCode FROM terms WHERE termID=1 ";
-
-        echo '<form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->objDB->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Image Information: </h1></td></tr>';
-            echo '<tr><td><img src="../Images/' . $contentCode . '"></td></tr>';
-            echo '<tr><td><input type="hidden" name="MAX_FILE_SIZE" value="100000" /></td></tr>';
-            echo '<tr><td>Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload"></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+?>
+        <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+            <input type="hidden" name="MAX_FILE_SIZE" value="100000">
+<?php
+            if ($stmt = $this->objDB->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Image Information: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="../Images/<?=$contentCode;?>">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function updateImage() {
-
+    /**
+     * Update image
+     *
+     * @return void
+     */
+    public function updateImage()
+    {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $target_filename = basename($_FILES["fileToUpload"]["name"]);
-
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file, PATHINFO_EXTENSION);
 
@@ -138,52 +198,65 @@ class termsConditions extends SunLibraryModule
         if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
         }
-        echo '<font color=black><b>Content Image Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=Team">';
+?>
+        <font color="black">
+            <b>Content Image Information Updated <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=Team">
+        </font>
+<?php
     }
 
-    public function updateContent() {
-
+    /**
+     * Update the content
+     *
+     * @return void
+     */
+    public function updateContent() 
+    {
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
-
         $stmt = $this->objDB->prepare("UPDATE terms SET $contentCode=? WHERE termsID=1");
         $stmt->bind_param('s', $contentDescription);
-
-        if ($stmt === false) {
+        if ($stmt === false) 
             trigger_error($this->objDB->error, E_USER_ERROR);
-        }
-
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Content Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=terms">';
+?>
+        <font color="black">
+            <b>Content Information Updated <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=terms">
+        </font>
+<?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     public function callToFunction()
     {
-        if ($stmt = $this->dbConnection->prepare($query)) {
-
+        if ($stmt = $this->objDB->prepare($query))
+        {
             $stmt->execute();
             $stmt->bind_result($contentCode);
-            $stmt->fetch();
-            
-            ?>
-
+            $stmt->fetch();            
+?>
             <div class="terms-background">
-            <div class="body-content">
-            
-            <?php echo nl2br($contentCode); ?>
-            
-            </div>
+                <div class="body-content">          
+                    <?=nl2br($contentCode);?>
+                </div>
             </div>
 <?php
         }
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     protected function assertTablesExist()
     {
         $objResult=$this->objDB->query('select 1 from `terms` LIMIT 1');
@@ -197,6 +270,11 @@ class termsConditions extends SunLibraryModule
             $objResult->free();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string Full version number as read from the file's docblock.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

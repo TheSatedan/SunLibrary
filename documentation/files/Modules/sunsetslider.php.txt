@@ -6,46 +6,67 @@
  * @author          Simon Mitchell <kartano@gmail.com>
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.1.0               2016-12-14 16:51:36 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 14:18:36 SM:  Minor fixes, indent fixes, added doco.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Flat bed slider module
+ */
 class flatbedslider extends SunLibraryModule
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     */
     function __construct(mysqli $dbConnection)
     {
         parent::__construct($dbConnection);
     }
 
+    /**
+     * Render the flat bed slider - THIS IS NOT THE CONSTRUCTOR.
+     *
+     * @return void
+     */
     public function flatbedslider()
     {
 ?>
         <div id="faderTable">
             <div id="slider">
-                <?php
+<?php
                 $stmt = $this->objDB->prepare("SELECT imageToSlide FROM flatbedslider");
                 $stmt->execute();
                 $stmt->bind_result($imageToSlide);
-
-                while ($checkRow = $stmt->fetch()) {
-
-                    echo '<figure><img class="sliderImageSize" src="Images/' . $imgToSlide . '" ></figure>';
+                while ($checkRow = $stmt->fetch()
+                {
+?>
+                    <figure>
+                        <img class="sliderImageSize" src="Images/<?=$imgToSlide;?>">
+                    </figure>
+<?php
                 }
-                ?>
+?>
             </div>
         </div>
-        <?php
+<?php
     }
 
-    public function uploadFile() {
-
+    /**
+     * Upload a file
+     *
+     * @return void
+     */
+    public function uploadFile()
+    {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $target_filename = basename($_FILES["fileToUpload"]["name"]);
-
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file, PATHINFO_EXTENSION);
-
+        
         // Check if image file is a actual image or fake image
         if (isset($_POST["submit"])) {
             $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
@@ -93,44 +114,56 @@ class flatbedslider extends SunLibraryModule
 
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
-
         $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false) {
+        if ($stmt === false) 
             trigger_error($this->objDB->error, E_USER_ERROR);
-        }
-
         $status = $stmt->execute();
 
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Content Image Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=Team">';
+?>
+        <font color="black">
+            <b>Content Image Information Updated <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=Team">
+        </font>
+<?php
     }
 
-    public function callToFunction() {
-        ?>
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    public function callToFunction()
+    {
+?>
         <div id="faderTable">
             <div id="slider">
-
-        <?php
-        $stmt = $this->objDB->prepare("SELECT pageID, pageName, pagePublish FROM pages");
-        $stmt->execute();
-
-        $stmt->bind_result($pageID, $pageName, $pagePublish);
-
-        while ($checkRow = $stmt->fetch()) {
-
-            echo '<figure><img class="sliderImageSize" src="' . $upload_dir['baseurl'] . '/' . $row->imageName . '" ></figure>';
-        }
-        ?>
+<?php
+                $stmt = $this->objDB->prepare("SELECT pageID, pageName, pagePublish FROM pages");
+                $stmt->execute();
+                $stmt->bind_result($pageID, $pageName, $pagePublish);
+                while ($checkRow = $stmt->fetch())
+                {
+?>
+                    <figure>
+                        <img class="sliderImageSize" src="<?=$upload_dir['baseurl'];?>/<?=$row->imageName;?>">
+                    </figure>
+<?php
+                }
+?>
             </div>
         </div>
-        <?php
+<?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string Full verison number as read from this file's docblock.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

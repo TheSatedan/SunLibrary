@@ -7,22 +7,42 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
  * @version         1.0.1               2016-12-13 16:24:29 SM:  Uses database.
  * @version         1.1.0               2016-12-15 08:46:48 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 16:27:57 SM:  Added doco.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Flatbedslider module.
+ */
 class flatbedslider extends SunLibraryModule
 {
-    function __construct($dbConnection)
+    /**
+     * {@inheritdoc}
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     * @return void
+     */
+    function __construct(mysqli $dbConnection)
     {
         parent::__construct($dbConnection);
     }
 
+    /**
+     * Flatbedslider.  This is NOT a constructor.
+     *
+     * @return void
+     */
     public function flatbedslider()
     {
         //    
     }
 
+    /**
+     * Upload file.
+     *
+     * @return void
+     */
     public function uploadFile()
     {
         $target_dir = "../Images/";
@@ -83,19 +103,24 @@ class flatbedslider extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false) {
+        if ($stmt === false)
             trigger_error($this->objDB->error, E_USER_ERROR);
-        }
-
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false) 
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Content Image Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=FlatbedSlider">';
+?>
+        <font color="black">
+            <b>Content Image Information Updated <br><br> Please Wait!!!!</b><br>
+            <meta http-equiv="refresh" content="1;url=?id=FlatbedSlider">
+        </font>
+<?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     public function renderCustomJavaScript()
     {
 ?>
@@ -111,27 +136,38 @@ class flatbedslider extends SunLibraryModule
 <?php
     }
 
-    public function callToFunction() {
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    public function callToFunction()
+    {
 ?>
         <div id="flatbed-background">
             <div id="slideshow">
 <?php
                 $leftRef = $this->objBD->prepare("SELECT imageToSlide FROM flatbedslider ORDER BY sliderOrder");
                 $leftRef->execute();
-
                 $leftRef->bind_result($imageToSlide);
-
-                while ($checkRow = $leftRef->fetch()) {
-
-                    echo '<div><img src="' . IMAGE_PATH.'/'.$imageToSlide . '" height=280></div>';
+                while ($checkRow = $leftRef->fetch())
+                {
+?>
+                    <div><img src="<?=IMAGE_PATH;?>/<?=$imageToSlide;?>" height="280"></div>
+<?php
                 }
                 $leftRef->close();
 ?>
             </div>
         </div>
-        <?php
+<?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     protected function assertTablesExist()
     {
         $objResult=$this->objDB->query('select 1 from `flatbedslider` LIMIT 1');
@@ -145,6 +181,11 @@ class flatbedslider extends SunLibraryModule
             $objResult->free();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string The module version number, as read from this file's docblock.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

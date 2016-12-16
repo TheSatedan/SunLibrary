@@ -7,14 +7,23 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:30:26 SM:  Uses database.
  * @version         1.1.0               2016-12-15 08:18:31 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 15:17:13 SM:  Added documentation, fixed some indentation.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Transport quote module.
+ */
 class TransportQuote extends SunLibraryModule
 {
-    function __construct(mysqli $dbConnection) {
-
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    function __construct(mysqli $dbConnection)
+    {
         parent::__construct($dbConnection);
     }
 
@@ -23,60 +32,116 @@ class TransportQuote extends SunLibraryModule
         //
     }
 
-    public function editContent() {
-
+    /**
+     * Edit content
+     *
+     * @return void
+     */
+    public function editContent()
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
-
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-
-        echo '<form method="POST" action="?id=team&&moduleID=UpdateContent">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->objDB->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Content: </h1></td></tr>';
-            echo '<tr><td><textarea cols=100 rows=10 name="contentMatter">' . $contentCode . '</textarea></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+?>
+        <form method="POST" action="?id=team&&moduleID=UpdateContent">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+<?php
+            if ($stmt = $this->objDB->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Content: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function editImage() {
-
+    /**
+     * Edit image
+     *
+     * @return void
+     */
+    public function editImage()
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
-
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-
-        echo '<form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->objDB->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Image Information: </h1></td></tr>';
-            echo '<tr><td><img src="../Images/' . $contentCode . '"></td></tr>';
-            echo '<tr><td><input type="hidden" name="MAX_FILE_SIZE" value="100000" /></td></tr>';
-            echo '<tr><td>Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload"></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+?>
+        <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+<?php
+            if ($stmt = $this->objDB->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Image Information: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="../Images/<?=$contentCode;?>">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function updateImage() {
-
+    /**
+     * Update image
+     *
+     * @return void
+     */
+    public function updateImage()
+    {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $target_filename = basename($_FILES["fileToUpload"]["name"]);
-
         $uploadOk = 1;
         $imageFileType = pathinfo($target_file, PATHINFO_EXTENSION);
 
@@ -127,45 +192,56 @@ class TransportQuote extends SunLibraryModule
 
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
-
         $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false) {
+        if ($stmt === false)
             trigger_error($this->objDB->error, E_USER_ERROR);
-        }
-
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Content Image Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=TransportQuote">';
+?>
+        <font color="black">
+            <b>Content Image Information Updated
+            <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=TransportQuote">
+        </font>
+<?php
     }
 
-    public function updateContent() {
-
+    /**
+     * Update content
+     *
+     * @return void
+     */
+    public function updateContent()
+    {
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
-
         $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentDescription);
 
-        if ($stmt === false) {
-            trigger_error($this->dbConnection->error, E_USER_ERROR);
-        }
-
+        if ($stmt === false)
+            trigger_error($this->objDB->error, E_USER_ERROR);
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Content Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=Team">';
+?>
+        <font color="black">
+            <b>Content Information Updated</b>
+            <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=Team">
+        </font>
+<?php
     }
 
-    public function callToFunction() {
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    public function callToFunction()
+    {
 ?>
         <div>Request a Quote</div>
         <div>Name</div>
@@ -191,6 +267,11 @@ class TransportQuote extends SunLibraryModule
 <?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     protected function assertTablesExist()
     {
         $objResult=$this->objDB('select 1 from `TransportQuote` LIMIT 1');
@@ -204,6 +285,11 @@ class TransportQuote extends SunLibraryModule
             $objResult->free();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string The full version as read from this file's docblock.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

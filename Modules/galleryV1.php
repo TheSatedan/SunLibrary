@@ -8,34 +8,70 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype.
  * @version         1.0.1               2016-12-13 16:25:11 SM:  Uses database.
  * @version         1.1.0               2016-12-15 08:42:00 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 16:23:48 SM:  Fixed indents, minor spelling mistake fix, added doco.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Gallery module.
+ */
 class gallery extends SunLibraryModule
 {
+    /**
+     * {@inheritdoc}
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     * @return void
+     */
 	function __construct(mysqli $dbConnection)
 	{
 	    parent::__construct($dbConnection);
 	}
 	
+	/**
+	 * Add image
+	 *
+	 * @return void
+	 */
 	public function addimage()
 	{
-		echo '<form action="web-settings.php?id=Gallery&&moduleID=UploadImage" method="post" enctype="multipart/form-data">';
-		echo '<table>';
-		echo '<tr><td>Add Image</td></tr>';
-		echo 'Select image to upload:';
-		echo '<input type="file" name="fileToUpload" id="fileToUpload">';
-
-		echo '<tr><td>Add Supporter</td></tr>';
-		echo '<tr><td>Add Supporter</td></tr>';
-		echo '<tr><td>Add Supporter</td></tr>';
-		echo '<input type="submit" value="Upload Image" name="submit">';
-		
-		echo '</table>';
-		echo '</form>';
+?>
+		<form action="web-settings.php?id=Gallery&&moduleID=UploadImage" method="post" enctype="multipart/form-data">
+		    <table>
+		        <tbody>
+		            <tr>
+		                <td>Add Image</td>
+		            </tr>
+		            <tr>
+		                <td>
+                            Select image to upload: <input type="file" name="fileToUpload" id="fileToUpload">
+		                </td>
+		            </tr>
+		            <tr>
+		                <td>Add Supporter</td>
+		            </tr>
+		            <tr>
+		                <td>Add Supporter</td>
+		            <tr>
+		                <td>Add Supporter</td>
+		            </tr>
+		            <tr>
+		                <td>
+		                    <input type="submit" value="Upload Image" name="submit">
+		                </td>
+		            </tr>
+		        </tbody>
+		    </table>
+		</form>
+<?php
 	}
 	
+	/**
+	 * Upload image.
+	 *
+	 * @return void
+	 */
 	public function uploadImage()
 	{
 		$target_dir = "../Images/kidscorner/";
@@ -82,43 +118,80 @@ class gallery extends SunLibraryModule
           }
     }
 	
+	/**
+	 * Edit Image
+	 *
+	 * @return void
+	 */
 	public function editImage()
 	{
 		//
 	}
 	
+	/**
+	 * update image
+	 *
+	 * @return void
+	 */
 	public function updateImage()
 	{
 		//
 	}
 	
+	/**
+	 * Render the gallery.
+	 *
+	 * @return void
+	 */
 	public function gallery()
 	{
 		$x=1;
-		echo '<table cellpadding=5>';
-		echo '<tr><td>Gallery Images <a href="web-settings.php?id=Gallery&&moduleID=AddImage"><button>Add Gallery Image</button></a></td></tr>';
-		echo '<tr><td hieght=70></td></tr>';
-		echo '<tr>';
-		
-		if ($handle = opendir('../Images/kidscorner/')) {
-			while (false !== ($entry = readdir($handle))) {
-				if ($entry != "." && $entry != "..") {
-					if ($x>=5)
-					{
-						echo '</tr><tr>';
-						$x=1;
-					}
-					echo '<td><img src="../Images/kidscorner/'.$entry.'" width=250> &nbsp; </td>';
-					$x++;
-				}
-			}
-			closedir($handle);
-		}
-		
-		echo '</tr>';
-		echo '</table>';	
+?>
+		<table cellpadding="5">
+		    <tbody>
+		        <tr>
+		            <td>
+		                Gallery Images <a href="web-settings.php?id=Gallery&&moduleID=AddImage"><button>Add Gallery Image</button></a>
+		            </td>
+		        </tr>
+		        <tr>
+		            <td height="70"></td>
+		        </tr>';
+		        <tr>
+<?php
+		            if ($handle = opendir('../Images/kidscorner/'))
+		            {
+			            while (false !== ($entry = readdir($handle)))
+			            {
+				            if ($entry != "." && $entry != "..")
+				            {
+					            if ($x>=5)
+					            {
+?>
+						            </tr><tr>
+<?php
+						        $x=1;
+					            }
+?>
+					            <td><img src="../Images/kidscorner/<?=$entry;?>" width="250"> &nbsp;</td>
+<?php
+					            $x++;
+				            }
+			            }
+			            closedir($handle);
+		            }
+?>
+		        </tr>
+		    </tbody>
+		</table>
+<?php
 	}
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string The full version for this module, as read form the file's docblock.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

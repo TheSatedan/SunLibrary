@@ -7,7 +7,7 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:22 SM:  Uses database.
  * @version         1.1.0               2016-12-14 15:51:07 SM:  Uses SunLibraryModule
- ( @VERSION         1.1.1               2016-12-16 11:58:18 SM:  Now calcultes what aircraft are around, based on the radar.
+ ( @VERSION         1.1.1               2016-12-16 11:58:18 SM:  Documentation fixes, broken tags fixed, indentation.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
@@ -19,9 +19,8 @@ class transportWelcome extends SunLibraryModule
 {
     /**
      * {@inheritdoc}
-     * Constructor.
      *
-     * @para mysqli $dbConn3ection
+     * @para mysqli $dbConnection
      * @return void
      */
     function __construct(mysqli $dbConnection)
@@ -34,15 +33,15 @@ class transportWelcome extends SunLibraryModule
      *
      * @param void
      * @return nothing
-     *
+     */
     public function transportWelcome()
     {
-    /*
-     * This is prometheus Administrator output.
-     */
-
+        /*
+         * This is prometheus Administrator output.
+         */
+    }
+    
     /**
-     * {@inheritDoc}
      * Edit contact info.
      *
      * @return void
@@ -53,24 +52,41 @@ class transportWelcome extends SunLibraryModule
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
 ?>
         <form method="POST" action="?id=team&&moduleID=UpdateContent">
-            <tbody>
-                <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+            <table>
+                <tbody>
+                    <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
 <?php
-                if ($stmt = $this->dbConnection->prepare($query))
-                {
-                    $stmt->execute();
-                    $stmt->bind_result($contentCode);
-                    $stmt->fetch();
+                    if ($stmt = $this->dbConnection->prepare($query))
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($contentCode);
+                        $stmt->fetch();
 ?>
-                    <table border="0" cellpadding="20">
-                        <tr><td><h1>Content: </h1></td></tr>
-                        <tr><td><textarea cols=100 rows=10 name="contentMatter">' . $contentCode . '</textarea></td></tr>
-                        <tr><td><input type="submit" name="submit" value="Update"></td></tr>
+                        <table border="0" cellpadding="20">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <h1>Content: </h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="submit" name="submit" value="Update">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 <?php
-        }
+                    }
 ?>
-            </tbody>
-        </form>'
+                </tbody>
+            </table>
+        </form>
 <?php
     }
 
@@ -96,9 +112,11 @@ class transportWelcome extends SunLibraryModule
         <font color="black">
             <b>Content Information Updated 
             <br><br> Please Wait!!!!<br>';
-            echo '<meta http-equiv="refresh" content="1;url=?id=Team">';
-    }
+            <meta http-equiv="refresh" content="1;url=?id=Team">
+        </font>
 <?php
+    }
+
     /**
      * Call to main redering function.
      *
@@ -150,9 +168,9 @@ class transportWelcome extends SunLibraryModule
     }
     
     /**
-     * Get the version number, calculated from the docblock.
+     * {@inheritdoc}
      *
-     * @return string.
+     * @return string The full version numnber as read from this file's docblock.
      */
     public function getVersion()
     {

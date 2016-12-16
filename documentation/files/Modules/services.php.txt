@@ -7,15 +7,27 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:32:11 SM:  Uses database.
  * @version         1.1.0               2016-12-14 16:54:40 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2016-12-16 14:38:45 SM:  Fixed broken links, added comments.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Services module
+ */
 class services extends SunLibraryModule
 {
+    /** @var string $setGetModuleID The module ID as read from $_GET. */
     public $setGetModuleID;
+    
+    /** @var string $setPostModuleID The module ID as read from $_POST. */
     public $setPostModuleID;
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     function __construct(mysqli $dbTriConnection)
     {
         $this->setGetModuleID = filter_input(INPUT_GET, 'moduleID');
@@ -23,18 +35,21 @@ class services extends SunLibraryModule
         parent::__construct($dbTriConnection);
     }
 
-    public function services() {
-
+    /**
+     * Services.  This is NOT the constructor.
+     *
+     * @return void
+     */
+    public function services()
+    {
         $localAction = NULL;
-
-        if (isset($this->setPostModuleID)) {
+        if (isset($this->setPostModuleID))
             $localAction = $this->setPostModuleID;
-        } elseif (isset($this->setGetModuleID)) {
+        elseif (isset($this->setGetModuleID))
             $localAction = urldecode($this->setGetModuleID);
-        }
 
-        Switch (strtoupper($localAction)) {
-
+        Switch (strtoupper($localAction))
+        {
             case "ACTIVATEMODULE" :
                 activeModule();
                 break;
@@ -46,165 +61,315 @@ class services extends SunLibraryModule
         }
     }
 
-    public function listServices() {
-
-        echo '<div class="something">Services <a href="?id=Services&&moduleID=addService"><button>Add New</button></a></div>';
-        echo '<br>';
-
+    /**
+     * List services.
+     *
+     * @return void
+     */
+    public function listServices()
+    {
+?>
+        <div class="something">
+            Services <a href="?id=Services&&moduleID=addService"><button>Add New</button></a>
+        </div>
+        <br>
+<?php
         $serviceRef = $this->objDB->prepare("SELECT serviceID, serviceName FROM services");
         $serviceRef->execute();
-
         $serviceRef->bind_result($serviceID, $serviceName);
-
-        while ($checkRow = $serviceRef->fetch()) {
-
-            echo '<div class="displayInformation"><a id="supporters" href="?id=Services&&moduleID=editServices&&serviceID=' . $serviceID . '">' . $serviceName . '</a></div>';
+        while ($checkRow = $serviceRef->fetch())
+        {
+?>
+            <div class="displayInformation">
+                <a id="supporters" href="?id=Services&&moduleID=editServices&&serviceID=<?=$serviceID;?>"><?=$serviceName;?></a>
+            </div>
+<?php
         }
     }
 
-    public function AddService() {
-
-        echo '<form method="POST" action="?id=Services&&moduleID=UploadService">';
-        echo '<table cellpadding=10>';
-        echo '<tr><td><h1>Add Service Information</h1></td></tr>';
-        echo '<tr><td><b>Service Name</b></td><td><input type="text" name="serviceName" placeholder="enter service name" required size=100></td></tr>';
-        echo '<tr><td valign=top><b>Service Description</b></td><td><textarea name="area2" style="width: 740px; height:300px; background-color: white;" placeholder="enter service description" required></textarea></td></tr>';
-        echo '<tr><td colspan=2><input type="Submit" name="Submit" value="Create Service"></td></tr>';
-        echo '</table>';
+    /**
+     * Add service form rendering.
+     *
+     * @return void
+     */
+    public function AddService()
+    {
+?>
+        <form method="POST" action="?id=Services&&moduleID=UploadService">
+            <table cellpadding="10">
+                <tbody>
+                    <tr>
+                        <td>
+                            <h1>Add Service Information</h1>
+                        </td>
+                    </tr>';
+                    <tr>
+                        <td>
+                            <b>Service Name</b>
+                        </td>
+                        <td>
+                            <input type="text" name="serviceName" placeholder="enter service name" required size="100">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top">
+                            <b>Service Description</b>
+                        </td>
+                        <td>
+                            <textarea name="area2" style="width: 740px; height:300px; background-color: white;" placeholder="enter service description" required></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <input type="Submit" name="Submit" value="Create Service">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+<?php
     }
 
-    public function uploadService() {
-
-        global $dbConnection;
-
+    /**
+     * Upload service
+     *
+     * @return void
+     */
+    public function uploadService()
+    {
         $serviceName = filter_input(INPUT_POST, "serviceName");
         $setContent = filter_input(INPUT_POST, "area2");
-
         $serviceRef = $this->objDB->prepare("INSERT INTO services (serviceName, serviceDescription) VALUES (?,?)");
         $serviceRef->bind_param('ss', $serviceName, $setContent);
         $status = $serviceRef->execute();
-
-        echo '<br><br>You have successfully added a New Service. <br><br><br>Please Wait.....<br>';
-        echo '<meta http-equiv="refresh" content="3;url=?id=Services">';
+?>
+        <br><br>
+        You have successfully added a New Service.
+        <br><br><br>
+        Please Wait.....
+        <br>
+        <meta http-equiv="refresh" content="3;url=?id=Services">
+<?php
     }
 
-    public function editServices() {
-
+    /**
+     * Edit services
+     *
+     * @return void
+     */
+    public function editServices()
+    {
         $getID = filter_input(INPUT_GET, "serviceID");
-
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=? ")) {
-
+        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=? "))
+        {
             $stmt->bind_param("i", $getID);
             $stmt->execute();
-
             $stmt->bind_result($serviceName, $serviceDescription);
             $stmt->fetch();
-           
-            echo '<form method="POST" action="?id=Services&&moduleID=UpdateService">';
-            echo '<input type=hidden name=serviceID value='.$getID.'>';
-            echo '<table cellpadding=10>';
-            echo '<tr><td><h1>Edit Service Information</h1></td></tr>';
-            echo '<tr><td><b>Service Name</b></td><td><input type="text" name="serviceName" value="' . $serviceName . '" required size=100></td></tr>';
-            echo '<tr><td valign=top><b>Service Description</b></td><td><textarea name="area2" style="width: 740px; height:300px; background-color: white;">' . $serviceDescription . '</textarea></td></tr>';
-            echo '<tr><td colspan=2><input type="Submit" name="Submit" value="Update Service"></td></tr>';
-            echo '</table>';
+?>
+            <form method="POST" action="?id=Services&&moduleID=UpdateService">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type=hidden name=serviceID value="<?=$getID;?>">
+                                <table cellpadding="10">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <h1>Edit Service Information</h1>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <b>Service Name</b></td>
+                                            <td>
+                                                <input type="text" name="serviceName" value="<?=$serviceName;?>" required size="100">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign=top>
+                                                <b>Service Description</b>
+                                            </td>
+                                            <td>
+                                                <textarea name="area2" style="width: 740px; height:300px; background-color: white;"><?=$serviceDescriptionl;?></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan=2>
+                                                <input type="Submit" name="Submit" value="Update Service">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+<?php
         }
     }
 
-    public function updateService() {
-
+    /**
+     * Update service
+     *
+     * @return void
+     */
+    public function updateService()
+    {
         $serviceDescription = filter_input(INPUT_POST, 'area2');
         $serviceID = filter_input(INPUT_POST, 'serviceID');
         $serviceName = filter_input(INPUT_POST, 'serviceName');
-
         $stmt = $this->objDB->prepare("UPDATE services SET serviceDescription=?, serviceName=? WHERE serviceID=?");
         $stmt->bind_param('ssi', $serviceDescription, $serviceName, $serviceID);
-
-        if ($stmt === false) {
+        if ($stmt === false)
             trigger_error($this->objDB->error, E_USER_ERROR);
-        }
-
         $status = $stmt->execute();
-
-        if ($status === false) {
+        if ($status === false)
             trigger_error($stmt->error, E_USER_ERROR);
-        }
-        echo '<font color=black><b>Service Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=Services">';
+?>
+        <font color="black">
+            <b>Service Information Updated <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=Services">
+        </font>
+<?php
     }
 
-    public function deleteService() {
-
-        echo '<table>';
-        echo '<tr><td><h1>Add Service Information</h1></td></tr>';
-        echo '</table>';
+    /**
+     * Delete a service
+     *
+     * @return void
+     */
+    public function deleteService()
+    {
+?>
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <h1>Add Service Information</h1>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+<?php
     }
 
-    public function callToFunction() {
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
+    public function callToFunction()
+    {
+?>
+        <div id="full-service">
+            <div class="body-content">
+                <div>
+                    <br><h1>Services</h1>
+                </div>
+                <div class="services-3">
+<?php
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=1 "))
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($serviceName, $serviceDescription);
+                        $stmt->fetch();
+?>
+                        <div>
+                            <h2><?=$serviceName;?></h2>
+                        </div>
+                        <div>
+                            <?=$serviceDescription;?>
+                        </div>
+<?php
+                        $stmt->close();
+                    }
 
-        echo '<div id="full-service">';
-        echo '<div class="body-content">';
-        echo '<div><br><h1>Services</h1></div>';
-        echo '<div class="services-3">';
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=1 ")) {
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 "))\
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($serviceName, $serviceDescription);
+                        $stmt->fetch();
+?>
+                        <br>
+                        <div>
+                            <h2><?=$serviceName;?></h2>
+                        </div>
+                        <div>
+                            <?=$serviceDescription;?>
+                        </div>
+<?php
+                        $stmt->close();
+                    }
+?>
+                </div>
+                <div class="services-3">
+<?php
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=3 "))
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($serviceName, $serviceDescription);
+                        $stmt->fetch();
+?>
+                        <div>
+                            <h2><?=$serviceName;?></h2>
+                        </div>
+                        <div>
+                            <?=$serviceDescription;?>
+                        </div>
+<?php
+                        $stmt->close();
+                    }
 
-            $stmt->execute();
-            $stmt->bind_result($serviceName, $serviceDescription);
-            $stmt->fetch();
-
-            echo '<div><h2>' . $serviceName . '</h2></div><div>' . $serviceDescription . '</div>';
-
-            $stmt->close();
-        }
-
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 ")) {
-
-            $stmt->execute();
-            $stmt->bind_result($serviceName, $serviceDescription);
-            $stmt->fetch();
-            echo '<br>';
-            echo '<div><h2>' . $serviceName . '</h2></div><div>' . $serviceDescription . '</div>';
-
-            $stmt->close();
-        }
-
-        echo '</div><div class="services-3">';
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=3 ")) {
-
-            $stmt->execute();
-            $stmt->bind_result($serviceName, $serviceDescription);
-            $stmt->fetch();
-
-            echo '<div><h2>' . $serviceName . '</h2></div><div>' . $serviceDescription . '</div>';
-
-            $stmt->close();
-        }
-
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=4 ")) {
-
-            $stmt->execute();
-            $stmt->bind_result($serviceName, $serviceDescription);
-            $stmt->fetch();
-            echo '<br>';
-            echo '<div><h2>' . $serviceName . '</h2></div><div>' . $serviceDescription . '</div>';
-
-            $stmt->close();
-        }
-        echo '</div><div class="services-3">';
-
-        if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=5 ")) {
-
-            $stmt->execute();
-            $stmt->bind_result($serviceName, $serviceDescription);
-            $stmt->fetch();
-
-            echo '<div><h2>' . $serviceName . '</h2></div><div>' . $serviceDescription . '</div>';
-
-            $stmt->close();
-        }
-        echo '</div></div>';
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=4 "))
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($serviceName, $serviceDescription);
+                        $stmt->fetch();
+?>
+                        <br>
+                        <div>
+                            <h2><?=$serviceName;?></h2>
+                        </div>
+                        <div>
+                            <?=$serviceDescription;?>
+                        </div>
+<?php
+                        $stmt->close();
+                    }
+?>
+                </div>
+                <div class="services-3">
+<?php
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=5 "))
+                    {
+                        $stmt->execute();
+                        $stmt->bind_result($serviceName, $serviceDescription);
+                        $stmt->fetch();
+?>
+                        <div>
+                            <h2><?=$serviceName;?></h2>
+                        </div>
+                        <div>
+                            <?=$serviceDescription;?>
+                        </div>
+<?php
+                        $stmt->close();
+                    }
+?>
+                </div>
+            </div>
+        </div>
+<?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     public function renderHeaderLinks()
     {
 ?>
@@ -212,6 +377,11 @@ class services extends SunLibraryModule
 <?php
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return void
+     */
     protected function assertTablesExist()
     {
         $objResult=$this->objDB->query('select 1 from `services ` LIMIT 1');
@@ -225,6 +395,11 @@ class services extends SunLibraryModule
             $objResult->free();
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @return string Full verison number as read from the docblock for this file.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);
