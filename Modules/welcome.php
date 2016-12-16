@@ -7,22 +7,43 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:51 SM:  Uses database.
  * @version         1.1.0               2016-12-14 15:46:10 SM:  Extends the SunLibraryModule.
+ * @version         1.1.1               2016-12-16 11:39:33 SM:  Added some code comments for phpdoc.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
+/**
+ * Welcome class
+ */
 class welcome extends SunLibraryModule
 {
+    /**
+     * {@inheritdoc}
+     * Constructor.
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     * @return void
+     */
     function __construct(mysqli $dbConnection)
     {
         parent::__construct($dbConnection);
     }
 
+    /**
+     * Displaying a welcome message.
+     *
+     * @return void
+     */
     public function welcome()
     {
         //
     }
 
+    /**
+     * Rendering function.
+     *
+     * @return void
+     */
     public function callToFunction()
     {
         if ($stmt = $this->objDB->prepare("SELECT phoneNumber, mobileNumber, emailOne, emailTwo, AddressOne, AddressTwo, welcomeContent FROM welcome WHERE welcomeID=1"))
@@ -45,6 +66,11 @@ class welcome extends SunLibraryModule
         }
     }
     
+    /**
+     * Asserts that the required table exists.
+     *
+     * @return void
+     */
     public function assertTablesExist()
     {
         $objResult=$this->objDB->query('select 1 from `welcome` LIMIT 1');
@@ -58,6 +84,11 @@ class welcome extends SunLibraryModule
             $objResult->free();
     }
     
+    /**
+     * Get the version of this file, from the docblock.
+     *
+     * @return string The current version number.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);

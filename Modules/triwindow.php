@@ -7,6 +7,7 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:38 SM:  Uses database.
  * @version         1.1.0               2016-12-14 15:50:45 SM:  Uses SunLibraryModule
+ * @version         1.1.1               2016-12-16 11:51:06 SM:  Minor code cleaning.
  */
 
 require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
@@ -17,56 +18,130 @@ require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 
 class triwindow extends SunLibraryModule
 {
+    /**
+     * {@inheritdoc}
+     * Constructor
+     *
+     * @param mysqli $dbConnection Connection to the database.
+     * @return void
+     */
     function __construct(mysqli $dbConnection)
     {
         parent::__construct($dbConnection);
     }
 
+    /**
+     * Render the triwindow.
+     *
+     * @return void
+     */
     public function triwindow() {
 
-        if ($stmt = $this->dbConnection->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1")) {
-
+        if ($stmt = $this->dbConnection->prepare("SELECT windoqwOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1"))
+        {
             $stmt->execute();
             $stmt->bind_result($windowOne, $windowTwo, $windowThree);
             $stmt->fetch();
-
-            echo '<br><br><table cellpadding=10 cellspacing=0 width=50%>';
-            echo '<tr><td colspan=2><h2>Tri-Window Panel</h2></td></tr>';
-            echo '<tr><td colspan=2></td></tr>';
-            echo '<tr><td colspan=2 class="headerMenu">Left Window</td></tr>';
-            echo '<tr><td>' . $windowOne . '</td><td width=75><a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowOne">edit</a></td></tr>';
-            echo '<tr><td colspan=2 class="headerMenu">Middle Window</td></tr>';
-            echo '<tr><td>' . $windowTwo . '</td><td width=75><a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowTwo">edit</a></td></tr>';
-            echo '<tr><td colspan=2 class="headerMenu">Right Window</td></tr>';
-            echo '<tr><td>' . $windowThree . '</td><td width=75><a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowThree">edit</a></td></tr>';
-            echo '</table>';
+?>
+            <br><br>
+            <table cellpadding="10" cellspacing="0" width="50%">
+                <tbody>
+                    <tr>
+                        <td colspan=2>
+                            <h2>Tri-Window Panel</h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="headerMenu">
+                            Left Window
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><?=$windowOne;?></td>
+                        <td width=75>
+                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowOne">edit</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="headerMenu">Middle Window</td>
+                    </tr>
+                    <tr>
+                        <td><?=$windowTwo?></td>
+                        <td width="75">
+                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowTwo">edit</a>
+                        </td>
+                    <tr>
+                        <td colspan="2" class="headerMenu">
+                            Right Window
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><?=$windowThree;?></td>
+                        <td width="75">
+                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowThree">edit</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+<?php
         }
     }
 
-    public function editContent() {
-
+    /**
+     * Edit the content
+     *
+     * @return void
+     */
+    public function editContent()
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
-
         $query = "SELECT $contentCode FROM triWindow WHERE triWindowID=1 ";
-
-        echo '<form method="POST" action="?id=TriWindow&&moduleID=UpdateContent">';
-        echo '<input type="hidden" name="contentCode" value="' . $contentCode . '">';
-
-        if ($stmt = $this->dbConnection->prepare($query)) {
-
-            $stmt->execute();
-            $stmt->bind_result($contentCode);
-            $stmt->fetch();
-
-            echo '<table border=0 cellpadding=20>';
-            echo '<tr><td><h1>Content: </h1></td></tr>';
-            echo '<tr><td><textarea cols=100 rows=10 name="contentMatter">' . $contentCode . '</textarea></td></tr>';
-            echo '<tr><td><input type="submit" name="submit" value="Update"></td></tr>';
-        }
-        echo '</form>';
+?>
+        <form method="POST" action="?id=TriWindow&&moduleID=UpdateContent">
+            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+<?php
+            if ($stmt = $this->dbConnection->prepare($query))
+            {
+                $stmt->execute();
+                $stmt->bind_result($contentCode);
+                $stmt->fetch();
+?>
+                <table border="0" cellpadding="20">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <h1>Content: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <textarea cols="100" rows="10" name="contentMatter"><?=$contentCode;?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>';
+                    </tbody>
+                </table>
+<?php
+            }
+?>
+        </form>
+<?php
     }
 
-    public function updateContent() {
+    /**
+     * Update content rendering method.
+     *
+     * @return voud
+     */
+    public function updateContent()
+    {
 
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
@@ -83,10 +158,18 @@ class triwindow extends SunLibraryModule
         if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
         }
-        echo '<font color=black><b>Content Information Updated <br><br> Please Wait!!!!<br>';
-        echo '<meta http-equiv="refresh" content="1;url=?id=TriWindow">';
-    }
+?>
+        <font color="black">
+            <b>Content Information Updated <br><br> Please Wait!!!!<br>
+            <meta http-equiv="refresh" content="1;url=?id=TriWindow">
+<?php
+        }
 
+    /**
+     * Call to function implementation for this class.
+     *
+     * @return void
+     */
     public function callToFunction() {
 
         if ($stmt = $this->objDB->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1"))
