@@ -246,7 +246,7 @@ class clientSupporters extends SunLibraryModule
                     <td>Company Name</td>
                     <td>Company Hyperlink</td>
                 </tr>
-<?p;hp
+<?php
                 $stmt = $this->objDB->prepare("SELECT supporterID, companyName, companyLogo, companyHyperlink FROM supporters ORDER BY supporterID ");
                 $stmt->execute();
                 $stmt->bind_result($supporterID, $companyName, $companyLogo, $companyHyperlink);
