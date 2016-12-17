@@ -52,7 +52,7 @@ class resources extends SunLibraryModule
 		<b>Resources</b>
 		<a href="web-settings.php?id=Resources&&moduleID=AddResource"><button>Add New</button></a>
 		<br><br><br>
-		<table width="100%"" cellpadding="5" cellspacing="0" border="1">
+		<table width="100%" cellpadding="5" cellspacing="0" border="1">
 		    <tbody>
 		        <tr bgcolor=Black>
 		            <td>
@@ -154,7 +154,7 @@ class resources extends SunLibraryModule
 		define("UPLOAD_DIR", "../files/");
 		if (!empty($_FILES["myFile"]))
 		{
-            $myFile = $_FILES["myFile"]
+            $myFile = $_FILES["myFile"];
     		if ($myFile["error"] !== UPLOAD_ERR_OK)
         		die("<p>An error occurred.</p>");
 

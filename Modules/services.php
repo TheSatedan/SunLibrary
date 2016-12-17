@@ -287,7 +287,7 @@ class services extends SunLibraryModule
                         $stmt->close();
                     }
 
-                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 "))\
+                    if ($stmt = $this->objDB->prepare("SELECT serviceName, serviceDescription FROM services WHERE serviceID=2 "))
                     {
                         $stmt->execute();
                         $stmt->bind_result($serviceName, $serviceDescription);

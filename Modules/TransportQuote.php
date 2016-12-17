@@ -127,8 +127,9 @@ class TransportQuote extends SunLibraryModule
             }
 ?>
         </form>
-    }
 <?php
+}
+
 
     /**
      * Update image
