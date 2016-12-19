@@ -15,7 +15,6 @@ use FileAttributeTools\FileAttributes;
 
 require_once 'FileAttributeTools.php';
 
-
 /**
  * Loads and handles modules for a given site.
  * Modules are dynamically loaded from the 'modules' folder, and then rendered from here.
@@ -120,6 +119,8 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
                     try
                     {
                         $objModule=new $entry($dbConnection);
+                        if (get_parent_class($objModule)!=='SunLibraryModule')
+                            die("Loaded module $entry from the Modules folder - but it is NOT an instance of SunLibraryModule.");
                         $arrModules[$entry]=$objModule;
                     }
                     catch(Exception $objException)
