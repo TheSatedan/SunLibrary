@@ -8,11 +8,13 @@
  * @version         1.0.0               2016-11-28 08:14:46 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:38:42 SM:  Uses database.
  * @version         1.1.0               2016-12-15 14:46:44 SM:  Has access to FileAttributeTools to obtain version number details.
+ * @version         1.1.1               2016-12-19 14:49:04 SM:  Bug fixes.
  */
+
+use FileAttributeTools\FileAttributes;
 
 require_once 'FileAttributeTools.php';
 
-use \FileAttributeTools;
 
 /**
  * Loads and handles modules for a given site.
@@ -31,7 +33,14 @@ function sunlibrary(ModuleManager $objModules)
 <?php
                 foreach($objModules as $txtName=>$objModule)
                 {
-                    $objFile=FileAttributeTools\FileAttributeTools("Modules\{$objModules[$txtName]}");
+                    try
+                    {
+                        $objFile=new FileAttributeTools\FileAttributes("Modules\{$objModules[$txtName]}");
+                    }
+                    catch(\RuntimeException $objRTException)
+                    {
+                        die($objRTException);
+                    }
 ?>
                     <li><code><?=get_class($objModule); ?></code></li>
                     <ul>
@@ -151,6 +160,14 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         $this->lngPosition = 0;
     }
+
+    /**
+     * Iterator interface
+     */
+    public function current()
+    {
+        return $this->arrModules[$this->lngPosition];
+    }
     
     /**
      * Iterator interface
@@ -179,7 +196,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     /**
      * ArrayAccess interface
      */
-    public function offsetSet($mixOffset, SunLibraryModule $objModule)
+    public function offsetSet($mixOffset, $objModule)
     {
         if (is_null($mixOffset))
             $this->arrModules[] = $objModule;

@@ -14,6 +14,7 @@
  * @package         FileAttributeTools
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.1.0               2016-12-15 14:01:45 SM:  Now returns a DOMDocument format for the values.
+ * @version         1.1.1               2016-12-19 13:23:18 SM:  Exception thrown if the specified file does not exist, etc.
  */
 
 namespace FileAttributeTools;
@@ -62,9 +63,17 @@ final class FileAttributes
      *
      * @param string $txtFile The FQN of the file to be parsed.
      * @return void
+     * @throws  \RuntimeException       File doesn't exist, is a directory, or has an invalid MIME type.
      */
     public function __construct($txtFile)
     {
+        if (!file_exists($txtFile))
+            throw new \RuntimeException("The file $txtFile does not exist.");
+        elseif (is_dir($txtFile))
+            throw new \RuntimeException("The file $txtFile is a directory.");
+        elseif (mime_content_type($txtFile)!=='text/plain')
+            throw new \RuntimeException("The file $txtFile is a text file that could contain PHP.");        
+        
         $this->txtFilename=$txtFile;
         $this->txtVersion='';
         $this->arrAuthor=array();
@@ -80,7 +89,7 @@ final class FileAttributes
 
         $hdlFile=@fopen($txtFile,r);
         if ($hdlFile===false)
-            throw new InvalidArgumentException("The module file $txtFile could not be opened for reading.");
+            throw new \InvalidArgumentException("The module file $txtFile could not be opened for reading.");
         $blnProcessing=true;
         $blnWeAreInDockblock=true;
         $lngMaxVersion=0;
