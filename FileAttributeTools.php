@@ -15,6 +15,7 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.1.0               2016-12-15 14:01:45 SM:  Now returns a DOMDocument format for the values.
  * @version         1.1.1               2016-12-19 13:23:18 SM:  Exception thrown if the specified file does not exist, etc.
+ * @version         1.1.2               2016-12-19 15:42:43 SM:  Fixed bug where mime_content_type may not exist in any given PHP installation.
  */
 
 namespace FileAttributeTools;
@@ -69,11 +70,8 @@ final class FileAttributes
     {
         if (!file_exists($txtFile))
             throw new \RuntimeException("The file $txtFile does not exist.");
-        elseif (is_dir($txtFile))
-            throw new \RuntimeException("The file $txtFile is a directory.");
-        elseif (mime_content_type($txtFile)!=='text/plain')
-            throw new \RuntimeException("The file $txtFile is a text file that could contain PHP.");        
-        
+        if (is_dir($txtFile))
+            throw new \RuntimeException("The file $txtFile is a directory.");        
         $this->txtFilename=$txtFile;
         $this->txtVersion='';
         $this->arrAuthor=array();
