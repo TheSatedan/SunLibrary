@@ -16,6 +16,7 @@
  * @version         1.1.0               2016-12-15 14:01:45 SM:  Now returns a DOMDocument format for the values.
  * @version         1.1.1               2016-12-19 13:23:18 SM:  Exception thrown if the specified file does not exist, etc.
  * @version         1.1.2               2016-12-19 15:42:43 SM:  Fixed bug where mime_content_type may not exist in any given PHP installation.
+ * @version         1.1.3               2016-12-20 09:26:55 SM:  Improved code to look for dates and times.
  */
 
 namespace FileAttributeTools;
@@ -136,9 +137,37 @@ final class FileAttributes
                             $this->txtVersionMinor=$arrMatches[2];
                             $this->txtVersionPatch=$arrMatches[3];
                             $lngMaxVersion=$lngVersion;
-                            preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}) (.*)/',$txtLine,$arrMatches);
-                            $this->txtModifiedDate="{$arrMatches[1]}-{$arrMatches[2]}-{$arrMatches[3]} {$arrMatches{4}}:{$arrMatches[5]}:{$arrMatches[6]}";
-                            $this->txtModifiedComments=$arrMatches[7];
+                            
+                            // SM:  Did we find an ISO8601 date that incldues a TIME?
+                            if (preg_match('/(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})? (.*)/',$txtLine,$arrMatches))
+                            {
+                                $this->txtModifiedDate="{$arrMatches[1]}-{$arrMatches[2]}-{$arrMatches[3]} {$arrMatches{4}}:{$arrMatches[5]}:{$arrMatches[6]}";
+                                $this->txtModifiedComments=trim(array_pop($arrMatches));
+                            }
+                            // SM:  Did we find an ISO8601 date with no time?
+                            elseif (preg_match('/(\d{4})-(\d{2})-(\d{2}) (.*)/',$txtLine,$arrMatches))
+                            {
+                                $this->txtModifiedDate="{$arrMatches[1]}-{$arrMatches[2]}-{$arrMatches[3]}";
+                                $this->txtModifiedComments=trim(array_pop($arrMatches));
+                            }
+                            // SM:  Did we find an endian date with a time?
+                            elseif (preg_match('/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})? (.*)/',$txtLine,$arrMatches))
+                            {
+                                $this->txtModifiedDate="{$arrMatches[1]}/{$arrMatches[2]}/{$arrMatches[3]} {$arrMatches{4}}:{$arrMatches[5]}:{$arrMatches[6]}";
+                                $this->txtModifiedComments=trim(array_pop($arrMatches));
+                            }                            
+                            // SM:  Did we find an endian date with no time?
+                            elseif (preg_match('/(\d{2})\/(\d{2})\/(\d{4}) (.*)/',$txtLine,$arrMatches))
+                            {
+                                $this->txtModifiedDate="{$arrMatches[1]}/{$arrMatches[2]}/{$arrMatches[3]}";
+                                $this->txtModifiedComments=trim(array_pop($arrMatches));
+                            }
+                            // SM:  Undefined for now.  Just ignore it.
+                            else
+                            {
+                                $this->txtModifiedDate='';
+                                $this->txtModifiedComments='';
+                            }
                         }
                     }
                     
