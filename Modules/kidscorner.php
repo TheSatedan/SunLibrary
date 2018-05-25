@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 16:16:35 SM:  Added doco.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Kidscorner module.
@@ -18,25 +18,25 @@ require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
 class kidscorner extends SunLibraryModule
 {
     /**
-    * {@inheritdoc}
-    *
-    * @param mysqli $objDB Connection to the database.
-    * @return void
-    */
-	function __construct(mysqli $objDB)
-	{
-		parent::__construct($objDB);
-	}
-	
-	/**
-	 * Landing page.
-	 *
-	 * @return void
-	 */
-	public function landingPage()
-	{
-		echo 'Hello World';
-	}
+     * {@inheritdoc}
+     *
+     * @param mysqli $objDB Connection to the database.
+     * @return void
+     */
+    function __construct(mysqli $objDB)
+    {
+        parent::__construct($objDB);
+    }
+
+    /**
+     * Landing page.
+     *
+     * @return void
+     */
+    public function landingPage()
+    {
+        echo 'Hello World';
+    }
 
     /**
      * {@inheritdoc}
@@ -48,4 +48,5 @@ class kidscorner extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

@@ -5,6 +5,7 @@
  * @author          Andrew Jeffries <andrew.jeffries@sunsetcoders.com.au>
  * @version         1.0.0               2016-11-28 08:12:35 SM:  Prototype
  * @version         1.1.0               2016-12-15 16:17:53 SM:  Made use of the ModuleManager.
+ * @version         1.1.1               2018-05-25 14:32:00 CST SM:  PSR fixes
  */
 include 'auth.php';
 include 'function_class.php';
@@ -105,4 +106,3 @@ catch(Exception $objException)
 </html>
 <?php
 @$objDB->close();
-?>

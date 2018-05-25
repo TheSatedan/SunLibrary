@@ -21,81 +21,70 @@ require_once 'FileAttributeTools.php';
  *
  * @return          void
  */
-function sunlibrary(ModuleManager $objModules) 
+function sunlibrary(ModuleManager $objModules)
 {
-    try
-    {
-?>
+    try {
+        ?>
         <h1>All Loaded Modules</h1>
         <div class="module-display">
             <ul>
-<?php
-                foreach($objModules as $txtName=>$objModule)
-                {
-                    try
-                    {
-                        $objFile=new FileAttributeTools\FileAttributes("Modules\{$objModules[$txtName]}");
-                    }
-                    catch(\RuntimeException $objRTException)
-                    {
+                <?php
+                foreach ($objModules as $txtName => $objModule) {
+                    try {
+                        $objFile = new FileAttributeTools\FileAttributes("Modules\{$objModules[$txtName]}");
+                    } catch (\RuntimeException $objRTException) {
                         die($objRTException);
                     }
-?>
-                    <li><code><?=get_class($objModule); ?></code></li>
+                    ?>
+                    <li><code><?= get_class($objModule); ?></code></li>
                     <ul>
-                        <li>Version: <?=$objFile->txtVersion;?></li>
-                        <li>Version Date: <?=$objFile->txtModifiedDate;?></li>
-                        <li>Version Comments: <?=$objFile->txtModifiedComments;?></li>
-                        <li>Description: <?=$objFile->txtDescription;?></li>
+                        <li>Version: <?= $objFile->txtVersion; ?></li>
+                        <li>Version Date: <?= $objFile->txtModifiedDate; ?></li>
+                        <li>Version Comments: <?= $objFile->txtModifiedComments; ?></li>
+                        <li>Description: <?= $objFile->txtDescription; ?></li>
                         <li>Authors</li>
                         <ul>
-<?php
-                            foreach($objFile->arrAuthor as $txtEmail=>$txtAuthor)
-                            {
-                                if (is_integer($txtEmail))
-                                {
-?>
-                                    <li><?=$txtAuthor;?></li>
-<?php
-                                }
-                                else
-                                {
-?>
-                                    <li><?=$txtAuthor;?> - Email: <?=$txtEmail;?></li>
-<?php
+                            <?php
+                            foreach ($objFile->arrAuthor as $txtEmail => $txtAuthor) {
+                                if (is_integer($txtEmail)) {
+                                    ?>
+                                    <li><?= $txtAuthor; ?></li>
+                                    <?php
+                                } else {
+                                    ?>
+                                    <li><?= $txtAuthor; ?> - Email: <?= $txtEmail; ?></li>
+                                    <?php
                                 }
                             }
-?>
+                            ?>
                         </ul>
                     </ul>
-<?php
+                    <?php
                 }
-?>
+                ?>
             </ul>
         </div>
         <p></p>
         <h1>Rendering All Modules</h1>
         <div class="module-display">
-<?php
+            <?php
             $objModules->RenderAll();
-?>
+            ?>
         </div>
-<?php
-    }
-    catch(Exception $objException)
-    {
+        <?php
+    } catch (Exception $objException) {
         die($objException);
-    }   
+    }
 }
 
-final class ModuleManager implements Iterator,ArrayAccess,Countable
+final class ModuleManager implements Iterator, ArrayAccess, Countable
 {
     /** @var array $arrModules A collection of module names that we have loaded. */
-    protected $arrModules=array();
-    
+    protected $arrModules = array();
+
     /** @var int $lngPosition A pointer variable for use when travering this object with foreach.  Part of the Iterator inter */
     protected $lngPosition;
-    
+
     /**
      * Construct a new module manager.
      *
@@ -105,7 +94,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
      */
     public function __construct(mysqli $objDB)
     {
-        $this->lngPosition=0;
+        $this->lngPosition = 0;
         if ($handle = opendir('Modules')) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
@@ -115,24 +104,22 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
                     //--------------------------------------------------------------------------------------                
 
                     require_once 'Modules/' . $entry;
-                    
-                    try
-                    {
-                        $objModule=new $entry($dbConnection);
-                        if (get_parent_class($objModule)!=='SunLibraryModule')
+
+                    try {
+                        $objModule = new $entry($dbConnection);
+                        if (get_parent_class($objModule) !== 'SunLibraryModule') {
                             die("Loaded module $entry from the Modules folder - but it is NOT an instance of SunLibraryModule.");
-                        $arrModules[$entry]=$objModule;
-                    }
-                    catch(Exception $objException)
-                    {
+                        }
+                        $arrModules[$entry] = $objModule;
+                    } catch (Exception $objException) {
                         throw $objException;
-                    }                                        
+                    }
                 }
             }
             closedir($handle);
         }
     }
-    
+
     /**
      * Render all of the modules we have loaded.
      *
@@ -141,19 +128,15 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
      */
     public function RenderAll()
     {
-        foreach($this as $objModule)
-        {
-            try
-            {
+        foreach ($this as $objModule) {
+            try {
                 $objModule->callToFunction();
-            }
-            catch(Exception $objException)
-            {
+            } catch (Exception $objException) {
                 throw $objException;
             }
         }
     }
-    
+
     /**
      * Iterator interface
      */
@@ -169,7 +152,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         return $this->arrModules[$this->lngPosition];
     }
-    
+
     /**
      * Iterator interface
      */
@@ -177,7 +160,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         return $this->lngPosition;
     }
-    
+
     /**
      * Iterator interface
      */
@@ -185,7 +168,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         ++$this->lngPosition;
     }
-    
+
     /**
      * Iterator interface
      */
@@ -199,19 +182,20 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
      */
     public function offsetSet($mixOffset, $objModule)
     {
-        if (is_null($mixOffset))
+        if (is_null($mixOffset)) {
             $this->arrModules[] = $objModule;
-        else
+        } else {
             $this->arrModules[$mixOffset] = $objModule;
+        }
     }
-    
+
     /**
      * ArrayAccess interface
      */
     public function offsetExists($mixOffset)
     {
         return isset($this->arrModules[$mixOffset]);
-    }    
+    }
 
     /**
      * ArrayAccess interface
@@ -220,7 +204,7 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         unset($this->arrModules[$mixOffset]);
     }
-    
+
     /**
      * ArrayAccess interface
      */
@@ -228,13 +212,12 @@ final class ModuleManager implements Iterator,ArrayAccess,Countable
     {
         return isset($this->arrModules[$mixOffset]) ? $this->arrModules[$mixOffset] : null;
     }
-    
+
     /**
      * Countable interface
      */
-    public function count() 
-    { 
+    public function count()
+    {
         return count($this->arrModules);
     }
 }
-?>

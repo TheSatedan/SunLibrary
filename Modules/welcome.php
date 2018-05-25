@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 11:39:33 SM:  Added some code comments for phpdoc.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Welcome class
@@ -46,26 +46,26 @@ class welcome extends SunLibraryModule
      */
     public function callToFunction()
     {
-        if ($stmt = $this->objDB->prepare("SELECT phoneNumber, mobileNumber, emailOne, emailTwo, AddressOne, AddressTwo, welcomeContent FROM welcome WHERE welcomeID=1"))
-        {
+        if ($stmt = $this->objDB->prepare("SELECT phoneNumber, mobileNumber, emailOne, emailTwo, AddressOne, AddressTwo, welcomeContent FROM welcome WHERE welcomeID=1")) {
             $stmt->execute();
-            $stmt->bind_result($phoneNumber, $mobileNumber, $emailOne, $emailTwo, $AddressOne, $AddressTwo, $welcomeContent);
+            $stmt->bind_result($phoneNumber, $mobileNumber, $emailOne, $emailTwo, $AddressOne, $AddressTwo,
+                $welcomeContent);
             $stmt->fetch();
             ?>
             <div id="welcome-content">
-                <div class="body-content">  
+                <div class="body-content">
                     <div class="welcome-left">
                         <div class="welcome-one"><?php echo $phoneNumber . '<br>' . $mobileNumber; ?></div>
                         <div class="welcome-two"><?php echo $emailOne . '<br>' . $emailTwo; ?></div>
                         <div class="welcome-three"><?php echo $AddressOne . '<br>' . $AddressTwo; ?></div>
                     </div>
                     <div class="welcome-content"><?php echo nl2br($welcomeContent); ?></div>
-                </div> 
+                </div>
             </div>
             <?php
         }
     }
-    
+
     /**
      * Asserts that the required table exists.
      *
@@ -73,17 +73,16 @@ class welcome extends SunLibraryModule
      */
     public function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `welcome` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `welcome` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE welcome (welcomeID INT(11) AUTO_INCREMENT PRIMARY KEY, phoneNumber VARCHAR(100) NOT NULL, mobileNumber VARCHAR(100) NOT NULL, emailOne VARCHAR(100) NOT NULL, emailTwo VARCHAR(100) NOT NULL, AddressOne VARCHAR(100) NOT NULL, AddressTwo VARCHAR(2000) NOT NULL, welcomeContent VARCHAR(4000) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
-    
+
     /**
      * Get the version of this file, from the docblock.
      *
@@ -94,5 +93,6 @@ class welcome extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>
     

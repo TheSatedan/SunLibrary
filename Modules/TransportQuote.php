@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 13:32:01 SM:  Cleaned up HTML, fixed some broken links, added documentation.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Transport quote class
@@ -43,40 +43,39 @@ class TransportQuote extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-?>
+        ?>
         <form method="POST" action="?id=team&&moduleID=UpdateContent">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Content: </h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h1>Content: </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea cols=100 rows=10 name="contentMatter"><?= $contentCode; ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-<?php                
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -84,51 +83,52 @@ class TransportQuote extends SunLibraryModule
      *
      * @return void
      */
-    public function editImage() {
+    public function editImage()
+    {
 
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-?>
+        ?>
         <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
             <input type="hidden" name="MAX_FILE_SIZE" value="100000">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Image Information: </h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="../Images/<?=$contentCode;?>">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h1>Image Information: </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="../Images/<?= $contentCode; ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Choose a replacement image to upload: <br> <input type="file" name="fileToUpload"
+                                                                              id="fileToUpload">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
-}
+        <?php
+    }
 
 
     /**
@@ -204,12 +204,12 @@ class TransportQuote extends SunLibraryModule
         if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
         }
-?>
+        ?>
         <font color="black">
             <b>Content Image Information Updated <br><br> Please Wait!!!!</b><br>
             <meta http-equiv="refresh" content="1;url=?id=TransportQuote">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -234,11 +234,11 @@ class TransportQuote extends SunLibraryModule
         if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
         }
-?>
+        ?>
         <font color="black"><b>Content Information Updated <br><br> Please Wait!!!!</b><br>
             <meta http-equiv="refresh" content="1;url=?id=Team">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -248,44 +248,100 @@ class TransportQuote extends SunLibraryModule
      */
     public function callToFunction()
     {
-?>
+        ?>
         <div id="quote-background">
             <div class="body-content">
-                <div><br><br><h2>Request a Quote</h2></div>
+                <div><br><br>
+                    <h2>Request a Quote</h2></div>
 
                 <div class="section">
                     <div class="section1">
-                        <div class="next2">Name</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">Account Name</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">Email</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">Make of vehicle: (i.e. Ford, Holden)</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">Model of vehicle: (i.e. Falcon, Commodore)</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">Type of vehicle</div><div class="padder"><select name="quoteCarType"><option value="">[ select ]</option><option value="Sedan">Sedan</option><option value="Wagon">Wagon</option><option value="Ute">Ute</option><option value="Coupe">Coupe</option><option value="Hatch">Hatch</option><option value="Other">Other</option></select></div>
+                        <div class="next2">Name</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Account Name</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Email</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Make of vehicle: (i.e. Ford, Holden)</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Model of vehicle: (i.e. Falcon, Commodore)</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Type of vehicle</div>
+                        <div class="padder"><select name="quoteCarType">
+                                <option value="">[ select ]</option>
+                                <option value="Sedan">Sedan</option>
+                                <option value="Wagon">Wagon</option>
+                                <option value="Ute">Ute</option>
+                                <option value="Coupe">Coupe</option>
+                                <option value="Hatch">Hatch</option>
+                                <option value="Other">Other</option>
+                            </select></div>
                     </div>
                     <div class="section2">
                         <div>Pickup Details</div>
-                        <div class="next2">Suburb</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">State</div><div class="padder"><select name="quotePickUpState"><option value="">[ select ]</option><option value="1">Queensland</option><option value="2">New South Wales</option><option value="3">Victoria</option><option value="4">South Australia</option><option value="5">Western Australia</option><option value="7">Northern Territory</option><option value="8">Australian Capital Territory</option></select></div>
-                        <div class="next2">Depot Location</div><div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Suburb</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">State</div>
+                        <div class="padder"><select name="quotePickUpState">
+                                <option value="">[ select ]</option>
+                                <option value="1">Queensland</option>
+                                <option value="2">New South Wales</option>
+                                <option value="3">Victoria</option>
+                                <option value="4">South Australia</option>
+                                <option value="5">Western Australia</option>
+                                <option value="7">Northern Territory</option>
+                                <option value="8">Australian Capital Territory</option>
+                            </select></div>
+                        <div class="next2">Depot Location</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
                         <div>Delivery Details</div>
-                        <div class="next2">Suburb</div><div class="padder"><input type="text" name="quoteName"></div>
-                        <div class="next2">State</div><div class="padder"><select name="quoteDropOffState"><option value="">[ select ]</option><option value="1">Queensland</option><option value="2">New South Wales</option><option value="3">Victoria</option><option value="4">South Australia</option><option value="5">Western Australia</option><option value="7">Northern Territory</option><option value="8">Australian Capital Territory</option></select></div>
-                        <div class="next2">Depot Location</div><div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">Suburb</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                        <div class="next2">State</div>
+                        <div class="padder"><select name="quoteDropOffState">
+                                <option value="">[ select ]</option>
+                                <option value="1">Queensland</option>
+                                <option value="2">New South Wales</option>
+                                <option value="3">Victoria</option>
+                                <option value="4">South Australia</option>
+                                <option value="5">Western Australia</option>
+                                <option value="7">Northern Territory</option>
+                                <option value="8">Australian Capital Territory</option>
+                            </select></div>
+                        <div class="next2">Depot Location</div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
                     </div>
                 </div>
                 <div class="secondSection">
-                    <div class="next2">Is the vehicle drivable:</div><div class="padder"><input type="radio" name="drivable" value="Yes" onclick="javascript:yesnoCheck();" id="yesCheck"> Yes <input type="radio" name="drivable" value="No" onclick="javascript:yesnoCheck();" id="noCheck"> No </div>
-                    <div  id="ifYes" style="display:none">
-                    <div class="next2">If so, please provide details including dimensions: (height, length, width)</div><div class="padder"><input type="text" name="quoteName"></div>
+                    <div class="next2">Is the vehicle drivable:</div>
+                    <div class="padder"><input type="radio" name="drivable" value="Yes"
+                                               onclick="javascript:yesnoCheck();" id="yesCheck"> Yes <input type="radio"
+                                                                                                            name="drivable"
+                                                                                                            value="No"
+                                                                                                            onclick="javascript:yesnoCheck();"
+                                                                                                            id="noCheck">
+                        No
                     </div>
-                    <div class="next2">Lift Kit</div><div class="padder"><input type="text" name="quoteName"></div>
-                    <div class="next2">Larger Tyres</div><div class="padder"><input type="text" name="quoteName"></div>
-                    <div class="next2">If vehicle is lowered: Ride height</div><div class="padder"><input type="text" name="quoteName"></div>
-                    <div class="next2">Will there be personal effects stored in your vehicle *</div><div class="padder"><input type="radio" name="effects" value="Yes"> Yes <input type="radio" name="effects" value="No"> No </div>
+                    <div id="ifYes" style="display:none">
+                        <div class="next2">If so, please provide details including dimensions: (height, length, width)
+                        </div>
+                        <div class="padder"><input type="text" name="quoteName"></div>
+                    </div>
+                    <div class="next2">Lift Kit</div>
+                    <div class="padder"><input type="text" name="quoteName"></div>
+                    <div class="next2">Larger Tyres</div>
+                    <div class="padder"><input type="text" name="quoteName"></div>
+                    <div class="next2">If vehicle is lowered: Ride height</div>
+                    <div class="padder"><input type="text" name="quoteName"></div>
+                    <div class="next2">Will there be personal effects stored in your vehicle *</div>
+                    <div class="padder"><input type="radio" name="effects" value="Yes"> Yes <input type="radio"
+                                                                                                   name="effects"
+                                                                                                   value="No"> No
+                    </div>
                 </div>
             </div>
         </div>
-<?php
+        <?php
     }
 
     /**
@@ -295,17 +351,16 @@ class TransportQuote extends SunLibraryModule
      */
     public function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `TransportQuote` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `TransportQuote` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $dbTriConnection->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objRsult->free();
+        }
     }
-    
+
     /**
      * {@inheritdoc}
      *
@@ -313,15 +368,15 @@ class TransportQuote extends SunLibraryModule
      */
     public function renderCustomJavaScript()
     {
-?>
+        ?>
         function yesnoCheck()
         {
-            if (document.getElementById('yesCheck').checked)
-                document.getElementById('ifYes').style.display = 'block';
-            else 
-                document.getElementById('ifYes').style.display = 'none';
+        if (document.getElementById('yesCheck').checked)
+        document.getElementById('ifYes').style.display = 'block';
+        else
+        document.getElementById('ifYes').style.display = 'none';
         }
-<?php
+        <?php
     }
 
     /**
@@ -334,4 +389,5 @@ class TransportQuote extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

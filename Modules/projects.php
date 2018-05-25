@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 15:35:06 SM:  Code clean, added documentation.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Projects module
@@ -35,95 +35,93 @@ class projects extends SunLibraryModule
      */
     public function projects()
     {
-?>
+        ?>
         <table cellpadding="10" cellspacing="0" width="50%">
             <thead>
-                <tr>
-                    <td colspan=3>
-                        <h2>Past Projects</h2>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan=3>
-                        &nbsp;
-                    </td>
-                </tr>
+            <tr>
+                <td colspan=3>
+                    <h2>Past Projects</h2>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=3>
+                    &nbsp;
+                </td>
+            </tr>
             </thead>
             <tbody>
+            <tr>
+                <td colspan="3" bgcolor="262626">
+                    <font color="white">Music Studio</font>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button><a href="?id=Projects&&moduleID=AddMusic">Add Music</a></button>
+                </td>
+            </tr>
+            <?php
+            $leftRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
+            $leftRef->execute();
+            $leftRef->bind_result($projectContent);
+            while ($checkRow = $leftRef->fetch()) {
+                ?>
                 <tr>
-                    <td colspan="3" bgcolor="262626">
-                        <font color="white">Music Studio</font>
+                    <td bgcolor="white">
+                        <?= $projectContent; ?>
+                    </td>
+                    <td bgcolor="white">
+                        <a href="#">edit</a>
+                    </td>
+                    <td bgcolor="white">
+                        <a class="sunsetLink" href="#">delete</a>
                     </td>
                 </tr>
+                <?php
+            }
+            $leftRef->close();
+            ?>
+            <tr>
+                <td colspan="3">
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3" bgcolor="262626">
+                    <font color="white">Art Studio</font>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button><a href="?id=Projects&&moduleID=AddImage">Add Artwork</a></button>
+                </td>
+            </tr>
+            <?php
+            $rightRef = $this->objDB->prepare("SELECT projectID, projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
+            $rightRef->execute();
+            $rightRef->bind_result($projectID, $projectContent);
+            while ($checkRow = $rightRef->fetch()) {
+                ?>
                 <tr>
-                    <td colspan="3">
-                        <button><a href="?id=Projects&&moduleID=AddMusic">Add Music</a></button>
+                    <td bgcolor="white">
+                        <a class="thumbnail" href="#thumb"><?= $projectContent; ?>
+                            <span><img src="../../Projects/<?= $projectContent; ?>"></span>
+                        </a>
+                    </td>
+                    <td bgcolor="white">
+                        <a href="?id=Projects&&moduleID=editImage&&ImageID=<?= $projectID; ?>">edit</a>
+                    </td>
+                    <td bgcolor="white">
+                        <a class="sunsetLink" href="#">delete</a>
                     </td>
                 </tr>
-<?php
-                $leftRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
-                $leftRef->execute();
-                $leftRef->bind_result($projectContent);
-                while ($checkRow = $leftRef->fetch())
-                {
-?>
-                    <tr>
-                        <td bgcolor="white">
-                            <?=$projectContent;?>
-                        </td>
-                        <td bgcolor="white">
-                            <a href="#">edit</a>
-                        </td>
-                        <td bgcolor="white">
-                            <a class="sunsetLink" href="#">delete</a>
-                        </td>
-                    </tr>
-<?php
-                }
-                $leftRef->close();
-?>
-                <tr>
-                    <td colspan="3">
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3" bgcolor="262626">
-                        <font color="white">Art Studio</font>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
-                        <button><a href="?id=Projects&&moduleID=AddImage">Add Artwork</a></button>
-                    </td>
-                </tr>
-<?php
-                $rightRef = $this->objDB->prepare("SELECT projectID, projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
-                $rightRef->execute();
-                $rightRef->bind_result($projectID, $projectContent);
-                while ($checkRow = $rightRef->fetch())
-                {
-?>
-                    <tr>
-                        <td bgcolor="white">
-                            <a class="thumbnail" href="#thumb"><?=$projectContent;?>
-                                <span><img src="../../Projects/<?=$projectContent;?>"></span>
-                            </a>
-                        </td>
-                        <td bgcolor="white">
-                            <a href="?id=Projects&&moduleID=editImage&&ImageID=<?=$projectID;?>">edit</a>
-                        </td>
-                        <td bgcolor="white">
-                            <a class="sunsetLink" href="#">delete</a>
-                        </td>
-                    </tr>
-<?php
-                }
-                $rightRef->close();
-?>
+                <?php
+            }
+            $rightRef->close();
+            ?>
             </tbody>
         </table>
-<?php
+        <?php
     }
 
     /**
@@ -133,35 +131,35 @@ class projects extends SunLibraryModule
      */
     public function addImage()
     {
-?>
+        ?>
         <form action="?id=Projects&&moduleID=UploadImage" method="post" enctype="multipart/form-data">
             <table border="0" cellpadding="10">
                 <tbody>
-                    <tr>
-                        <td>
-                            <h2>Upload Past Artwork</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Choose an image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="submit" name="submit" value="Upload">
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        <h2>Upload Past Artwork</h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="100000"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Choose an image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" name="submit" value="Upload">
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </form>
-<?php
-    }   
+        <?php
+    }
 
     /**
      * Upload image
@@ -222,18 +220,20 @@ class projects extends SunLibraryModule
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
         $stmt = $this->objDB->prepare("INSERT INTO projects (projectSide, projectContent, projectOrder) VALUES ('Right', '$contentImageName', '1')");
-  
-        if ($stmt === false)
+
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false) 
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
             <b>Content Image Information Uploaded <br><br> Please Wait!!!!</b><br>
             <meta http-equiv="refresh" content="1;url=?id=Projects">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -245,55 +245,56 @@ class projects extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ImageID");
         $query = "SELECT projectContent FROM projects WHERE projectID=? ";
-?>
+        ?>
         <form action="?id=Projects&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->bind_param('i', $contentCode);
                 $stmt->execute();
                 $stmt->bind_result($projectContent);
                 $stmt->fetch();
-?>
+                ?>
                 <table border=0 cellpadding=20>
                     <thead>
-                        <tr>
-                            <td>
-                                <h2>Image Information: </h2>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h2>Image Information: </h2>
+                        </td>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <img src="../Images/<?=$projectContent;?>">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <img src="../Images/<?= $projectContent; ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="100000"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Choose a replacement image to upload: <br> <input type="file" name="fileToUpload"
+                                                                              id="fileToUpload">
+                        </td>
+                    </tr>
                     </tbody>
                     <tfoot>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update"><button><a href="?id=Projects">Cancel</a></button>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                            <button><a href="?id=Projects">Cancel</a></button>
+                        </td>
+                    </tr>
                     </tfoot>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -360,17 +361,19 @@ class projects extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE projects SET $contentCode=? WHERE projectID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false)
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
             <b>Content Image Information Updated <br><br> Please Wait!!!!</b><br>
             <meta http-equiv="refresh" content="1;url=?id=Projects">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -380,19 +383,19 @@ class projects extends SunLibraryModule
      */
     public function renderCustomJavaScript()
     {
-?>
+        ?>
         $("#projectSlideshow > div:gt(0)").hide();
 
         setInterval(function ()
         {
-            $('#projectSlideshow > div:first')
-                .fadeOut(1000)
-                .next()
-                .fadeIn(1000)
-                .end()
-                .appendTo('#projectSlideshow');
+        $('#projectSlideshow > div:first')
+        .fadeOut(1000)
+        .next()
+        .fadeIn(1000)
+        .end()
+        .appendTo('#projectSlideshow');
         }, 3000);
-<?php
+        <?php
     }
 
     /**
@@ -402,50 +405,48 @@ class projects extends SunLibraryModule
      */
     public function callToFunction()
     {
-?>
+        ?>
         <div id="project-content">
-            <div class="body-content"> 
+            <div class="body-content">
                 <a name="Past Projects"></a>
                 <div class="project-left">
-<?php
+                    <?php
                     $leftRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Left' ORDER BY projectOrder");
                     $leftRef->execute();
                     $leftRef->bind_result($projectContent);
-                    while ($checkRow = $leftRef->fetch())
-                    {
-?>
-                        <div><?=$projectContent; ?></div>
+                    while ($checkRow = $leftRef->fetch()) {
+                        ?>
+                        <div><?= $projectContent; ?></div>
                         <div>
                             <audio controls>
-                                <source src="Projects/<?=$projectContent; ?>" type="audio/mpeg">
+                                <source src="Projects/<?= $projectContent; ?>" type="audio/mpeg">
                                 Your browser does not support the audio element.';
                             </audio>
                         </div>
-<?php
+                        <?php
                     }
                     $leftRef->close();
-?>
+                    ?>
                 </div>
                 <div class="project-right">
                     <div id="projectSlideshow">
-<?php
+                        <?php
                         $rightRef = $this->objDB->prepare("SELECT projectContent FROM projects WHERE projectSide='Right' ORDER BY projectOrder");
                         $rightRef->execute();
                         $rightRef->bind_result($sliderImage);
-                        while ($checkRow = $rightRef->fetch())
-                        {
-?>
+                        while ($checkRow = $rightRef->fetch()) {
+                            ?>
                             <div>
-                                <img src="Projects/<?=$sliderImage;?>" width="100%">
+                                <img src="Projects/<?= $sliderImage; ?>" width="100%">
                             </div>
-<?php
+                            <?php
                         }
-?>
+                        ?>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
-<?php
+        <?php
     }
 
     /**
@@ -455,15 +456,14 @@ class projects extends SunLibraryModule
      */
     protected function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `projects` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `projects` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE projects (projectID INT(11) AUTO_INCREMENT PRIMARY KEY, projectSide VARCHAR(20) NOT NULL, projectContent VARCHAR(200) NOT NULL, projectOrder DECIMAL(1,0) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     /**
@@ -476,4 +476,5 @@ class projects extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

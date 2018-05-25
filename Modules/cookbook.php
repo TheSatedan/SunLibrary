@@ -9,7 +9,7 @@
  * @version         1.1.0               2016-12-15 15:06:52 SM:  Now uses SunLibraryModule.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 class cookbook extends SunLibraryModule
 {
@@ -18,8 +18,9 @@ class cookbook extends SunLibraryModule
         parent::__construct($dbConnection);
     }
 
-    public function cookbook() {
-        
+    public function cookbook()
+    {
+
         echo '<b>Family Cookbook</b> <a href="?id=Cookbook&&moduleID=AddRecipe"><button>Add New</button></a><br><br><br>';
         echo '<table width=100% cellpadding=10 cellspacing=0 border=0>';
         echo '<tr class="tableTop"><td>Recipe Name</td><td width=260>Recipe Uploader</td></tr>';
@@ -31,12 +32,13 @@ class cookbook extends SunLibraryModule
 
         while ($checkRow = $stmt->fetch()) {
 
-            echo '<tr class="rowRef"><td><a href="?id=Cookbook&&moduleID=editRecipe&&cookbookID=' . $cookbookID . '">' . $cookbookName . '</a></td><td>'.$userFullName.'</td></tr>';
+            echo '<tr class="rowRef"><td><a href="?id=Cookbook&&moduleID=editRecipe&&cookbookID=' . $cookbookID . '">' . $cookbookName . '</a></td><td>' . $userFullName . '</td></tr>';
         }
         echo '</table>';
     }
 
-    public function updateCookBook() {
+    public function updateCookBook()
+    {
         $cookbookID = filter_input(INPUT_POST, 'cookbookID');
         $cookbookName = filter_input(INPUT_POST, 'cookbookName');
 
@@ -97,7 +99,10 @@ class cookbook extends SunLibraryModule
             }
             $cookbookImage = basename($_FILES["fileToUpload"]["name"]);
             $query = "UPDATE cookbook SET cookbookName=?, cookbookImage=?, cookbookIngredient1=?, cookbookIngredient2=?, cookbookIngredient3=?, cookbookIngredient4=?, cookbookIngredient5=?, cookbookIngredient6=?, cookbookIngredient7=?, cookbookIngredient8=?, cookbookIngredient9=?, cookbookIngredient10=?, cookbookIngredient11=?, cookbookDescription=? WHERE cookbookID=?";
-            $parm = bind_param('ssssssssssssssi', $cookbookName, $cookbookImage, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookDescription, $cookbookID);
+            $parm = bind_param('ssssssssssssssi', $cookbookName, $cookbookImage, $cookbookIngredient1,
+                $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5,
+                $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9,
+                $cookbookIngredient10, $cookbookIngredient11, $cookbookDescription, $cookbookID);
         } else {
             $parm = 2;
             $query = "UPDATE cookbook SET cookbookName=?, cookbookIngredient1=?, cookbookIngredient2=?, cookbookIngredient3=?, cookbookIngredient4=?, cookbookIngredient5=?, cookbookIngredient6=?, cookbookIngredient7=?, cookbookIngredient8=?, cookbookIngredient9=?, cookbookIngredient10=?, cookbookIngredient11=?, cookbookDescription=? WHERE cookbookID=?";
@@ -105,8 +110,12 @@ class cookbook extends SunLibraryModule
 
         $stmt = $this->objDB->prepare($query);
 
-        if ($parm == 2)
-            $stmt->bind_param('sssssssssssssi', $cookbookName, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookDescription, $cookbookID);
+        if ($parm == 2) {
+            $stmt->bind_param('sssssssssssssi', $cookbookName, $cookbookIngredient1, $cookbookIngredient2,
+                $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6,
+                $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10,
+                $cookbookIngredient11, $cookbookDescription, $cookbookID);
+        }
 
         if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
@@ -121,14 +130,18 @@ class cookbook extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Cookbook">';
     }
 
-    public function editRecipe() {
+    public function editRecipe()
+    {
         $cookbookID = filter_input(INPUT_GET, 'cookbookID');
 
         if ($stmt = $this->objDB->prepare("SELECT cookbookName, cookbookImage, cookbookIngredient1, cookbookIngredient2, cookbookIngredient3, cookbookIngredient4, cookbookIngredient5, cookbookIngredient6, cookbookIngredient7, cookbookIngredient8, cookbookIngredient9, cookbookIngredient10, cookbookIngredient11, cookbookDescription FROM cookbook WHERE cookbookID=? ")) {
 
             $stmt->bind_param("i", $cookbookID);
             $stmt->execute();
-            $stmt->bind_result($cookbookName, $cookbookImage, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookDescription);
+            $stmt->bind_result($cookbookName, $cookbookImage, $cookbookIngredient1, $cookbookIngredient2,
+                $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6,
+                $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10,
+                $cookbookIngredient11, $cookbookDescription);
             $stmt->fetch();
 
             echo '<form method="POST" action="web-settings.php?id=Cookbook&&moduleID=UpdateCookbook" enctype="multipart/form-data">';
@@ -158,11 +171,12 @@ class cookbook extends SunLibraryModule
             echo '<tr><td><input type="Submit" name="Submit" value="Update"></td></tr>';
             echo '</table>';
             echo '</form>';
-            echo '<a href="?id=Cookbook&&moduleID=DeleteRecipe&&cookbookID='.$cookbookID.'"><button>Delete</button></a>';
+            echo '<a href="?id=Cookbook&&moduleID=DeleteRecipe&&cookbookID=' . $cookbookID . '"><button>Delete</button></a>';
         }
     }
 
-    public function uploadResourceFile() {
+    public function uploadResourceFile()
+    {
         define("UPLOAD_DIR", "../files/");
 
         if (!empty($_FILES["myFile"])) {
@@ -199,7 +213,8 @@ class cookbook extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=CookBook">';
     }
 
-    public function addRecipe() {
+    public function addRecipe()
+    {
         echo '<form method="POST" action="?id=CookBook&&moduleID=UploadRecipe" enctype="multipart/form-data">';
         echo '<table border=0 cellpadding=5 cellspacing=0 width=100%>';
         echo '<tr><td colspan=3><b>Add New Recipe</b></td></tr>';
@@ -230,8 +245,9 @@ class cookbook extends SunLibraryModule
         echo '</table>';
     }
 
-    public function uploadRecipe() {
-        
+    public function uploadRecipe()
+    {
+
         $cookbookName = filter_input(INPUT_POST, 'cookbookName');
 
         $cookbookIngredient1 = filter_input(INPUT_POST, 'cookbookIngredient1');
@@ -294,7 +310,7 @@ class cookbook extends SunLibraryModule
         }
 
         $userID = $_SESSION['userID'];
-        
+
         $cookbookImage = basename($_FILES["fileToUpload"]["name"]);
 
         $stmt = $this->objDB->prepare("INSERT INTO cookbook
@@ -321,7 +337,11 @@ class cookbook extends SunLibraryModule
         )
         VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
 
-        $stmt->bind_param('issssssssssssssssss', $userID, $cookbookName, $cookbookImage, $cookbookDescription, $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4, $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8, $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookIngredient12, $cookbookIngredient13, $cookbookIngredient14, $cookbookIngredient15);
+        $stmt->bind_param('issssssssssssssssss', $userID, $cookbookName, $cookbookImage, $cookbookDescription,
+            $cookbookIngredient1, $cookbookIngredient2, $cookbookIngredient3, $cookbookIngredient4,
+            $cookbookIngredient5, $cookbookIngredient6, $cookbookIngredient7, $cookbookIngredient8,
+            $cookbookIngredient9, $cookbookIngredient10, $cookbookIngredient11, $cookbookIngredient12,
+            $cookbookIngredient13, $cookbookIngredient14, $cookbookIngredient15);
 
         $status = $stmt->execute();
 
@@ -329,7 +349,8 @@ class cookbook extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Cookbook">';
     }
 
-    public function updateRecipe() {
+    public function updateRecipe()
+    {
         $resourceName = filter_input(INPUT_POST, 'resourceName');
         $resourceLink = filter_input(INPUT_POST, 'resourceLink');
         $cookbookID = filter_input(INPUT_POST, 'cookbookID');
@@ -350,8 +371,9 @@ class cookbook extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="1;url=web-settings.php?id=Cookbook">';
     }
 
-    public function deleteRecipe() {
-        
+    public function deleteRecipe()
+    {
+
         $getID = filter_input(INPUT_GET, 'cookbookID');
 
         $stmt = $this->objDB->prepare("DELETE FROM cookbook WHERE cookbookID = ?");
@@ -365,9 +387,8 @@ class cookbook extends SunLibraryModule
 
     protected function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `cookbook` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `cookbook` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE cookbook (cookbookID INT(11) AUTO_INCREMENT PRIMARY KEY, "
                 . "userID INT(11) NOT NULL, "
                 . "cookbookName VARCHAR(150) NOT NULL, "
@@ -391,14 +412,15 @@ class cookbook extends SunLibraryModule
                 . "cookbookIngredient15 VARCHAR(255) NOT NULL ) ");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);
-    }    
+    }
 }
+
 ?>

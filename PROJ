@@ -1,0 +1,10 @@
+#!/bin/bash
+
+name=sunlibrary
+version=1.0.0
+
+function pre_build()
+{
+    make ${nonopt[@]}
+    exit 0
+}

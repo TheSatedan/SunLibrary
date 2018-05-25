@@ -7,98 +7,119 @@
  * @version         1.0.0               2016-11-28 08:48:35 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:20:27 SM:  Uses database.
  * @version         1.1.0               2016-12-15 14:56:07 SM:  Uses SunLibraryModule.
+ * @version         1.1.1               2018-05-25 14:38:00 CST SM:  PSR fixes and bug where a variable was not defined in this class.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
- 
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
+
+/**
+ * Class dualslider
+ */
 class dualslider extends SunLibraryModule
 {
-    function __construct($dbConnection)
+    /**
+     * dualslider constructor.
+     * @param mysqli $dbConnection
+     */
+    function __construct(\mysqli $dbConnection)
     {
         parent::__construct($dbConnection);
     }
 
-    public function dualslider()
+    /**
+     * Render the dual slider.
+     */
+    public function dualslider():void
     {
-?>
+        ?>
         <table border="1" cellpadding="10">
             <tbody>
-                <tr>
-                    <td>Left</td>
-                    <td>Right</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                </tr>
+            <tr>
+                <td>Left</td>
+                <td>Right</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
             </tbody>
         </table>
-<?php
+        <?php
     }
 
-    public function editImage() 
+    /**
+     * Render image edit.
+     */
+    public function editImage(): void
     {
         $contentCode = filter_input(INPUT_GET, "ImageID");
         $query = "SELECT $contentCode FROM dualslider WHERE sliderID=? ";
-?>
+        ?>
         <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Image Information: </h1>
-                            </td>
-                        </tr>';
-                        <tr>
-                            <td>
-                                <img src="../Images/<?=$contentCode;?>">
-                            </td>
-                        </tr>';
-                        <tr>
-                            <td>
-                                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
-                            </td>
-                        </tr>';
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h1>Image Information: </h1>
+                        </td>
+                    </tr>
+                    ';
+                    <tr>
+                        <td>
+                            <img src="../Images/<?= $contentCode; ?>">
+                        </td>
+                    </tr>
+                    ';
+                    <tr>
+                        <td>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="100000"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Choose a replacement image to upload: <br> <input type="file" name="fileToUpload"
+                                                                              id="fileToUpload">
+                        </td>
+                    </tr>
+                    ';
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
-    public function updateImage()
+    /**
+     * Update image.
+     * @return void
+     */
+    public function updateImage(): void
     {
         $target_dir = "../Images/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
@@ -155,7 +176,7 @@ class dualslider extends SunLibraryModule
         $contentImageName = $target_filename;
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
-        $stmt = $this->dbConnection->prepare("UPDATE dualslider SET $contentCode=? WHERE sliderID=?");
+        $stmt = $this->objDB->prepare("UPDATE dualslider SET $contentCode=? WHERE sliderID=?");
         $stmt->bind_param('s', $contentImageName);
 
         if ($stmt === false) {
@@ -171,8 +192,12 @@ class dualslider extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="1;url=?id=dualslider">';
     }
 
-    public function editContent() {
-
+    /**
+     * Edit content render
+     * @return void
+     */
+    public function editContent(): void
+    {
         $contentCode = filter_input(INPUT_GET, "ContentID");
 
         $query = "SELECT $contentCode FROM services WHERE serviceID=1 ";
@@ -194,7 +219,12 @@ class dualslider extends SunLibraryModule
         echo '</form>';
     }
 
-    public function updateContent() {
+    /**
+     * Update content render.
+     * @return void
+     */
+    public function updateContent(): void
+    {
 
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
@@ -215,11 +245,16 @@ class dualslider extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="1;url=?id=dualslider">';
     }
 
-    public function callToFunction() {
-?>
+    /**
+     * Entry point.
+     * @return void
+     */
+    public function callToFunction(): void
+    {
+        ?>
         <div id="slider-content">
-            <div class="body-content"> 
-            <a name="The Studios"></a>
+            <div class="body-content">
+                <a name="The Studios"></a>
                 <div class="slider-cover"><img src="Images/slidercover.png" width="100%"></div>
                 <div class="slider-left">
                     <div id="slideshow">
@@ -254,54 +289,63 @@ class dualslider extends SunLibraryModule
                         ?>
                     </div>
                 </div>
-            </div> 
+            </div>
         </div>
         <?php
     }
 
-    protected function assertTablesExist()
+    /**
+     * Assets that the dualslider table exists.
+     * @return void
+     */
+    protected function assertTablesExist(): void
     {
-        $objResult=$this->objDB->query('select 1 from `dualslider` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `dualslider` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE dualslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, sliderSide VARCHAR(100) NOT NULL, sliderImage VARCHAR(100) NOT NULL, sliderOrder DECIMAL(1,0) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
-    public function documentReadyJavaScript()
+    /**
+     * Renders the Document ready init JS code for the slider.
+     * @return void
+     */
+    public function documentReadyJavaScript(): void
     {
-?>
+        ?>
         $("#slideshow > div:gt(0)").hide();
         setInterval(function ()
         {
-            $('#slideshow > div:first')
-            .fadeOut(1000)
-            .next()
-            .fadeIn(1000)
-            .end()
-            .appendTo('#slideshow');
+        $('#slideshow > div:first')
+        .fadeOut(1000)
+        .next()
+        .fadeIn(1000)
+        .end()
+        .appendTo('#slideshow');
         },3000);
-        
+
         $("#slideshow1 > div:gt(0)").hide();
         setInterval(function ()
         {
-            $('#slideshow1 > div:first')
-            .fadeOut(1000)
-            .next()
-            .fadeIn(1000)
-            .end()
-            .appendTo('#slideshow1');
+        $('#slideshow1 > div:first')
+        .fadeOut(1000)
+        .next()
+        .fadeIn(1000)
+        .end()
+        .appendTo('#slideshow1');
         },3000);
-<?php
+        <?php
     }
 
+    /**
+     * @return string The most recent version number from this particular file.
+     */
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);
-    }    
+    }
 }
-?>

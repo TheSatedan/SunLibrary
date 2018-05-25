@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 11:51:06 SM:  Minor code cleaning.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /*
  * The Following Snippet is to insert the module table into the mysqli table. 
@@ -35,58 +35,57 @@ class triwindow extends SunLibraryModule
      *
      * @return void
      */
-    public function triwindow() {
-
-        if ($stmt = $this->dbConnection->prepare("SELECT windoqwOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1"))
-        {
+    public function triwindow()
+    {
+        if ($stmt = $this->dbConnection->prepare("SELECT windoqwOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1")) {
             $stmt->execute();
             $stmt->bind_result($windowOne, $windowTwo, $windowThree);
             $stmt->fetch();
-?>
+            ?>
             <br><br>
             <table cellpadding="10" cellspacing="0" width="50%">
                 <tbody>
-                    <tr>
-                        <td colspan=2>
-                            <h2>Tri-Window Panel</h2>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="headerMenu">
-                            Left Window
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><?=$windowOne;?></td>
-                        <td width=75>
-                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowOne">edit</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="headerMenu">Middle Window</td>
-                    </tr>
-                    <tr>
-                        <td><?=$windowTwo?></td>
-                        <td width="75">
-                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowTwo">edit</a>
-                        </td>
-                    <tr>
-                        <td colspan="2" class="headerMenu">
-                            Right Window
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><?=$windowThree;?></td>
-                        <td width="75">
-                            <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowThree">edit</a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan=2>
+                        <h2>Tri-Window Panel</h2>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="headerMenu">
+                        Left Window
+                    </td>
+                </tr>
+                <tr>
+                    <td><?= $windowOne; ?></td>
+                    <td width=75>
+                        <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowOne">edit</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="headerMenu">Middle Window</td>
+                </tr>
+                <tr>
+                    <td><?= $windowTwo ?></td>
+                    <td width="75">
+                        <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowTwo">edit</a>
+                    </td>
+                <tr>
+                    <td colspan="2" class="headerMenu">
+                        Right Window
+                    </td>
+                </tr>
+                <tr>
+                    <td><?= $windowThree; ?></td>
+                    <td width="75">
+                        <a href="?id=Triwindow&&moduleID=editContent&&ContentID=windowThree">edit</a>
+                    </td>
+                </tr>
                 </tbody>
             </table>
-<?php
+            <?php
         }
     }
 
@@ -99,40 +98,40 @@ class triwindow extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM triWindow WHERE triWindowID=1 ";
-?>
+        ?>
         <form method="POST" action="?id=TriWindow&&moduleID=UpdateContent">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->dbConnection->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->dbConnection->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Content: </h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <textarea cols="100" rows="10" name="contentMatter"><?=$contentCode;?></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>';
+                    <tr>
+                        <td>
+                            <h1>Content: </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea cols="100" rows="10" name="contentMatter"><?= $contentCode; ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
+                    ';
                     </tbody>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -142,7 +141,6 @@ class triwindow extends SunLibraryModule
      */
     public function updateContent()
     {
-
         $contentDescription = filter_input(INPUT_POST, 'contentMatter');
         $contentCode = filter_input(INPUT_POST, 'contentCode');
 
@@ -158,26 +156,26 @@ class triwindow extends SunLibraryModule
         if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
         }
-?>
+        ?>
         <font color="black">
             <b>Content Information Updated <br><br> Please Wait!!!!<br>
-            <meta http-equiv="refresh" content="1;url=?id=TriWindow">
-<?php
-        }
+                <meta http-equiv="refresh" content="1;url=?id=TriWindow">
+                <?php
+    }
 
     /**
      * Call to function implementation for this class.
      *
      * @return void
      */
-    public function callToFunction() {
+    public function callToFunction()
+    {
 
-        if ($stmt = $this->objDB->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1"))
-        {
+        if ($stmt = $this->objDB->prepare("SELECT windowOne, windowTwo, windowThree FROM triWindow WHERE triWindowID=1")) {
             $stmt->execute();
             $stmt->bind_result($windowOne, $windowTwo, $windowThree);
             $stmt->fetch();
-?>
+            ?>
             <div id="triWindow-Background">
                 <div class="body-content">
                     <div class="triWindow-content">
@@ -188,21 +186,20 @@ class triwindow extends SunLibraryModule
                 </div>
             </div>
             <div class="spacer"></div>
-<?php
+            <?php
         }
     }
 
     public function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `triwindow` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `triwindow` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $dbTriConnection->prepare("CREATE TABLE triwindow (triwindowID INT(11) AUTO_INCREMENT PRIMARY KEY, windowOne VARCHAR(3000) NOT NULL, windowTwo VARCHAR(3000) NOT NULL, windowThree VARCHAR(3000) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     public function getVersion()
@@ -210,4 +207,3 @@ class triwindow extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
-?>

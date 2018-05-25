@@ -6,15 +6,17 @@
  * @version         1.0.0               2016-12-14 15:14:53 SM:  Prototype
  * @version         1.1.0               2016-12-15 08:32:18 SM:  SwitchMode is now part of the footprint.
  * @version         1.1.1               2016-12-16 17:11:27 SM:  Making use of the FileAttributes library.
+ * @version         1.1.2               2018-05-25 14:34:00 CST SM:  PSR fixes, fixes to use the FileAttributes.
  */
 
-use FileAttributes;
 require_once 'FileAttributeTools.php';
+
+use FileAttributeTools\FileAttributes AS FA;
 
 abstract class SunLibraryModule
 {
     protected $objDB;
-    
+
     /**
      * Constructor.
      *
@@ -23,17 +25,17 @@ abstract class SunLibraryModule
      */
     public function __construct(\mysqli $objDB)
     {
-        $this->objDB=$objDB;
-        
+        $this->objDB = $objDB;
+
         //--------------------------------------------------------------------------------------
         // SM:  As soon as we instantiate this module, we assert that the table exists
         //      and then switch through the current state to see what we need to do.
         //--------------------------------------------------------------------------------------
-        
+
         $this->assertTablesExist();
         $this->switchMode();
     }
-    
+
     /**
      * Render any links such as external JS or external CSS files that we might need.
      * These are all rendered in the HEAD of the document.
@@ -44,7 +46,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * Render any custom javascript a module may need, such as validation or functions for special effects.
      * These are all rendered into the HEAD of the document within a SCRIPT tag.
@@ -55,7 +57,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * Render any custom javascript inside the document ready function.  Anything here will be called as soon as the DOM is loaded.
      *
@@ -65,7 +67,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * The common entry point for all modules.
      *
@@ -75,7 +77,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * This function is used to assert that necessary tables for a given module exist.
      *
@@ -85,7 +87,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * Returns the version of the module, based on the most recent version number inside the files docblock.
      *
@@ -95,7 +97,7 @@ abstract class SunLibraryModule
     {
         return 'unknown';
     }
-    
+
     /**
      * Switch the mode of the module based on what the local action for the script is.
      *
@@ -105,7 +107,7 @@ abstract class SunLibraryModule
     {
         //
     }
-    
+
     /**
      * Helper function to retrieve the version number from a given file.
      *
@@ -113,8 +115,7 @@ abstract class SunLibraryModule
      */
     protected function readVersionFromFile($txtFile)
     {
-        $objDetails=FileAttributes\FileAttributes($txtFile);
+        $objDetails = new FA($txtFile);
         return $objDetails->txtVersion;
     }
 }
-?>

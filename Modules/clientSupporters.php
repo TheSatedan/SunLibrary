@@ -9,7 +9,7 @@
  * @version         1.1.0               2016-12-15 15:12:36 SM:  Uses SunLibraryModule.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 class clientSupporters extends SunLibraryModule
 {
@@ -25,57 +25,61 @@ class clientSupporters extends SunLibraryModule
 
     public function AddSupporter()
     {
-?>
-        <form action="web-settings.php?id=Supporters&&moduleID=UploadSupporter" method="post" enctype="multipart/form-data">
+        ?>
+        <form action="web-settings.php?id=Supporters&&moduleID=UploadSupporter" method="post"
+              enctype="multipart/form-data">
             <table width=100% cellpadding=15>
                 <tbody>
-                    <tr>
-                        <td colspan="2">
-                            <h1>Support Information</h1>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Supporter Name</b>
-                        </td>
-                        <td>
-                            <input type="text" name="supportName" placeholder="enter supporter name" required size="80">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="200">
-                            <b>Supporter Hyperlink</b>
-                        </td>
-                        <td>
-                            <input type="text" name="supportHyperlink" placeholder="enter supporter hyperlink" required size="80">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <b>Supporter Description: <br><br>
-                            <textarea name="supportDescription" placeholder="enter frontpage supporter Description" style="width: 740px; height: 200px; "></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Select Logo to upload:</b>
-                        </td>
-                        <td>
-                            <input type="file" name="fileToUpload" id="fileToUpload">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <input type="submit" value="Upload Image" name="submit">
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="2">
+                        <h1>Support Information</h1>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Supporter Name</b>
+                    </td>
+                    <td>
+                        <input type="text" name="supportName" placeholder="enter supporter name" required size="80">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="200">
+                        <b>Supporter Hyperlink</b>
+                    </td>
+                    <td>
+                        <input type="text" name="supportHyperlink" placeholder="enter supporter hyperlink" required
+                               size="80">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <b>Supporter Description: <br><br>
+                            <textarea name="supportDescription" placeholder="enter frontpage supporter Description"
+                                      style="width: 740px; height: 200px; "></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Select Logo to upload:</b>
+                    </td>
+                    <td>
+                        <input type="file" name="fileToUpload" id="fileToUpload">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="submit" value="Upload Image" name="submit">
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </form>
-<?php
+        <?php
     }
 
-    public function uploadSupporter() {
+    public function uploadSupporter()
+    {
         $target_dir = "../Images/Logos/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
         $uploadOk = 1;
@@ -125,17 +129,18 @@ class clientSupporters extends SunLibraryModule
 
         $stmt = $this->objDB->prepare("INSERT INTO supporters (companyName, companyHyperlink, companyDescription, companyLogo ) VALUES (?,?,?,?)");
 
-        $stmt->bind_param('ssss', $supporterName, $supporterHyperlink, $supporterDescription, $supporterImage );
+        $stmt->bind_param('ssss', $supporterName, $supporterHyperlink, $supporterDescription, $supporterImage);
 
         $status = $stmt->execute();
-?>
+        ?>
         <br><br>You have successfully added a Supporter. <br><br><br>
         Please Wait.....<br>
         <meta http-equiv="refresh" content="3;url=web-settings.php?id=Supporters"/>
-<?php
+        <?php
     }
 
-    public function editSupporter() {
+    public function editSupporter()
+    {
 
         $getID = filter_input(INPUT_GET, 'supporterID');
 
@@ -161,7 +166,8 @@ class clientSupporters extends SunLibraryModule
         }
     }
 
-    public function updateSupporter() {
+    public function updateSupporter()
+    {
 
         $target_dir = "../Images/Logos/";
         $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
@@ -209,8 +215,9 @@ class clientSupporters extends SunLibraryModule
         $companyHyperlink = filter_input(INPUT_POST, 'companyHyperlink');
         $companyLogo = basename($_FILES["fileToUpload"]["name"]);
 
-        if (!$companyLogo)
+        if (!$companyLogo) {
             $companyLogo = "na.png";
+        }
 
         $companyDescription = filter_input(INPUT_POST, 'supportDescription');
         $getID = filter_input(INPUT_POST, 'supporterID');
@@ -218,65 +225,71 @@ class clientSupporters extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE supporters SET companyName=?, companyLogo=?, companyHyperlink=?, companyDescription=? WHERE supporterID=?");
         $stmt->bind_param('ssssi', $companyName, $companyLogo, $companyHyperlink, $companyDescription, $getID);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false)
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
-       <font color="black">
+        }
+        ?>
+        <font color="black">
             <b>Supporter Updated <br><br> Please Wait!!!!<br>
-            <meta http-equiv="refresh" content="1;url=web-settings.php?id=Supporters"/>
+                <meta http-equiv="refresh" content="1;url=web-settings.php?id=Supporters"/>
         </font>
-<?php
+        <?php
     }
 
     public function supporters()
     {
-?>    
+        ?>
         <table cellpadding=10>
-            <tbody>                
-                <tr>
+            <tbody>
+            <tr>
+                <td>
+                    Supporters <a href="?id=Supporters&&moduleID=AddSupporter">
+                        <button>Add Supporter</button>
+                    </a>
+                </td>
+            </tr>
+            <tr class="tableTop">
+                <td>Company Logo</td>
+                <td>Company Name</td>
+                <td>Company Hyperlink</td>
+            </tr>
+            <?php
+            $stmt = $this->objDB->prepare("SELECT supporterID, companyName, companyLogo, companyHyperlink FROM supporters ORDER BY supporterID ");
+            $stmt->execute();
+            $stmt->bind_result($supporterID, $companyName, $companyLogo, $companyHyperlink);
+            $lngRow = 1;
+            while ($checkRow = $stmt->fetch()) {
+                ?>
+                <tr id="supporterRow_<?= $lngRow; ?>"
+                    onclick="window.document.location='?id=Supporters&&moduleID=editSupporter&&supporterID=' . $supporterID . '\';"
+                    style="cursor: pointer">
                     <td>
-                        Supporters <a href="?id=Supporters&&moduleID=AddSupporter"><button>Add Supporter</button></a>
+                        <img src="../Images/Logos/' . <?= $companyLogo; ?> . '" height="50">
+                    </td>
+                    <td>
+                        <?= $companyName; ?>
+                    </td>
+                    <td>
+                        <a href="<?= $companyHyperlink; ?>" target="_blank"><?= $companyHyperlink; ?></a>
                     </td>
                 </tr>
-                <tr class="tableTop">
-                    <td>Company Logo</td>
-                    <td>Company Name</td>
-                    <td>Company Hyperlink</td>
-                </tr>
-<?php
-                $stmt = $this->objDB->prepare("SELECT supporterID, companyName, companyLogo, companyHyperlink FROM supporters ORDER BY supporterID ");
-                $stmt->execute();
-                $stmt->bind_result($supporterID, $companyName, $companyLogo, $companyHyperlink);
-                $lngRow=1;
-                while ($checkRow = $stmt->fetch())
-                {
-?>
-                    <tr id="supporterRow_<?=$lngRow;?>" onclick="window.document.location='?id=Supporters&&moduleID=editSupporter&&supporterID=' . $supporterID . '\';" style="cursor: pointer">
-                        <td>
-                            <img src="../Images/Logos/' . <?=$companyLogo;?> . '" height="50">
-                        </td>
-                        <td>
-                            <?=$companyName;?>
-                        </td>
-                        <td>
-                            <a href="<?=$companyHyperlink;?>" target="_blank"><?=$companyHyperlink;?></a>
-                        </td>
-                    </tr>
-<?php
-                    $lngRow++;
-                }
-?>
+                <?php
+                $lngRow++;
+            }
+            ?>
             </tbody>
         </table>
-<?php
+        <?php
     }
 
     public function getVersion()
     {
         return $this->readVersionFromFile(__FILE__);
-    }    
+    }
 }
+
 ?>

@@ -7,10 +7,10 @@
  * @version         1.0.0               2016-11-28 08:46:13 SM:  Prototype
  * @version         1.0.1               2016-12-13 16:34:22 SM:  Uses database.
  * @version         1.1.0               2016-12-14 15:51:07 SM:  Uses SunLibraryModule
- ( @VERSION         1.1.1               2016-12-16 11:58:18 SM:  Documentation fixes, broken tags fixed, indentation.
+ * ( @VERSION         1.1.1               2016-12-16 11:58:18 SM:  Documentation fixes, broken tags fixed, indentation.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * The sunlibrary moule.
@@ -40,7 +40,7 @@ class transportWelcome extends SunLibraryModule
          * This is prometheus Administrator output.
          */
     }
-    
+
     /**
      * Edit contact info.
      *
@@ -50,44 +50,43 @@ class transportWelcome extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-?>
+        ?>
         <form method="POST" action="?id=team&&moduleID=UpdateContent">
             <table>
                 <tbody>
-                    <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-                    if ($stmt = $this->dbConnection->prepare($query))
-                    {
-                        $stmt->execute();
-                        $stmt->bind_result($contentCode);
-                        $stmt->fetch();
-?>
-                        <table border="0" cellpadding="20">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <h1>Content: </h1>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input type="submit" name="submit" value="Update">
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-<?php
-                    }
-?>
+                <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+                <?php
+                if ($stmt = $this->dbConnection->prepare($query)) {
+                    $stmt->execute();
+                    $stmt->bind_result($contentCode);
+                    $stmt->fetch();
+                    ?>
+                    <table border="0" cellpadding="20">
+                        <tbody>
+                        <tr>
+                            <td>
+                                <h1>Content: </h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <textarea cols=100 rows=10 name="contentMatter"><?= $contentCode; ?></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" name="submit" value="Update">
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <?php
+                }
+                ?>
                 </tbody>
             </table>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -103,18 +102,20 @@ class transportWelcome extends SunLibraryModule
         $stmt = $this->dbConnection->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentDescription);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->dbConnection->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false) 
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
-            <b>Content Information Updated 
-            <br><br> Please Wait!!!!<br>';
-            <meta http-equiv="refresh" content="1;url=?id=Team">
+            <b>Content Information Updated
+                <br><br> Please Wait!!!!<br>';
+                <meta http-equiv="refresh" content="1;url=?id=Team">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -122,51 +123,52 @@ class transportWelcome extends SunLibraryModule
      *
      * @return void.
      */
-    public function callToFunction() {
-?>
-        <br><br><div id="transport-background">
+    public function callToFunction()
+    {
+        ?>
+        <br><br>
+        <div id="transport-background">
             <div class="body-content">
                 <div class="transport-content">
-<?php
+                    <?php
                     if ($stmt = $this->dbConnection->prepare("SELECT section1, section2 FROM welcome WHERE welcomeID=1 ")) {
 
                         $stmt->execute();
                         $stmt->bind_result($section1, $section2);
                         $stmt->fetch();
-?>
+                        ?>
                         <div class="leftBank">
-                            <?=nl2br($section1);?>
+                            <?= nl2br($section1); ?>
                         </div>
                         <div class="rightBank">
-                            <?=nl2br($section2);?>
+                            <?= nl2br($section2); ?>
                         </div>
-<?php
+                        <?php
                     }
-?>
+                    ?>
                 </div>
             </div>
         </div>
-<?php
+        <?php
     }
 
     /**
-     * Assert that the existing tables are here.  
+     * Assert that the existing tables are here.
      *
      * @return void
      */
     public function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `welcome` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `welcome` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE welcome (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, section1 VARCHAR(1000) NOT NULL, section2 VARCHAR(2000) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
-    
+
     /**
      * {@inheritdoc}
      *
@@ -177,4 +179,5 @@ class transportWelcome extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 17:02:25 SM:  Added doco.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Experiences module.
@@ -330,10 +330,10 @@ class experiences extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE blog SET blogBody=?,blogSubject=?, blogAnonymous=? WHERE blogID=?");
         $stmt->bind_param('sssi', $blogBody, $blogSubject, $showName, $blogID);
         if ($stmt === false)
-            trigger_error($this->objDB->error, E_USER_ERROR);
+            {trigger_error($this->objDB->error, E_USER_ERROR);}
         $status = $stmt->execute();
         if ($status === false)
-            trigger_error($stmt->error, E_USER_ERROR);
+            {trigger_error($stmt->error, E_USER_ERROR);}
 ?>
         <font color="black">
             <b>Experience Information Updated <br><br> Please Wait!!!!<br></b>
@@ -352,4 +352,5 @@ class experiences extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }    
 }
+
 ?>

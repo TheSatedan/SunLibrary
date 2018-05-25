@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 15:17:13 SM:  Added documentation, fixed some indentation.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Transport quote module.
@@ -41,40 +41,39 @@ class TransportQuote extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-?>
+        ?>
         <form method="POST" action="?id=team&&moduleID=UpdateContent">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Content: </h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <textarea cols=100 rows=10 name="contentMatter"><?=$contentCode;?></textarea>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h1>Content: </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <textarea cols=100 rows=10 name="contentMatter"><?= $contentCode; ?></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -86,50 +85,50 @@ class TransportQuote extends SunLibraryModule
     {
         $contentCode = filter_input(INPUT_GET, "ContentID");
         $query = "SELECT $contentCode FROM teampanel WHERE teampanelID=1 ";
-?>
+        ?>
         <form action="?id=team&&moduleID=UpdateImage" method="post" enctype="multipart/form-data">
-            <input type="hidden" name="contentCode" value="<?=$contentCode;?>">
-<?php
-            if ($stmt = $this->objDB->prepare($query))
-            {
+            <input type="hidden" name="contentCode" value="<?= $contentCode; ?>">
+            <?php
+            if ($stmt = $this->objDB->prepare($query)) {
                 $stmt->execute();
                 $stmt->bind_result($contentCode);
                 $stmt->fetch();
-?>
+                ?>
                 <table border="0" cellpadding="20">
                     <tbody>
-                        <tr>
-                            <td>
-                                <h1>Image Information: </h1>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="../Images/<?=$contentCode;?>">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Choose a replacement image to upload: <br> <input type="file" name="fileToUpload" id="fileToUpload">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="submit" name="submit" value="Update">
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>
+                            <h1>Image Information: </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="../Images/<?= $contentCode; ?>">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" name="MAX_FILE_SIZE" value="100000"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Choose a replacement image to upload: <br> <input type="file" name="fileToUpload"
+                                                                              id="fileToUpload">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="submit" name="submit" value="Update">
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-<?php
+                <?php
             }
-?>
+            ?>
         </form>
-<?php
+        <?php
     }
 
     /**
@@ -195,18 +194,20 @@ class TransportQuote extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false)
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
             <b>Content Image Information Updated
-            <br><br> Please Wait!!!!<br>
-            <meta http-equiv="refresh" content="1;url=?id=TransportQuote">
+                <br><br> Please Wait!!!!<br>
+                <meta http-equiv="refresh" content="1;url=?id=TransportQuote">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -221,18 +222,20 @@ class TransportQuote extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE quotes SET $contentCode=? WHERE quoteID=1");
         $stmt->bind_param('s', $contentDescription);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false)
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
             <b>Content Information Updated</b>
             <br><br> Please Wait!!!!<br>
             <meta http-equiv="refresh" content="1;url=?id=Team">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -242,7 +245,7 @@ class TransportQuote extends SunLibraryModule
      */
     public function callToFunction()
     {
-?>
+        ?>
         <div>Request a Quote</div>
         <div>Name</div>
         <div>Account Name</div>
@@ -264,7 +267,7 @@ class TransportQuote extends SunLibraryModule
         <div>Larger Tyres</div>
         <div>If vehicle is lowered: Ride height</div>
         <div>Will there be personal effects stored in your vehicle *</div>
-<?php
+        <?php
     }
 
     /**
@@ -274,15 +277,14 @@ class TransportQuote extends SunLibraryModule
      */
     protected function assertTablesExist()
     {
-        $objResult=$this->objDB('select 1 from `TransportQuote` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB('select 1 from `TransportQuote` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE TransportQuote (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     /**
@@ -295,4 +297,5 @@ class TransportQuote extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

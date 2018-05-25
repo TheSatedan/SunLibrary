@@ -9,7 +9,7 @@
  * @version         1.1.0               2016-12-15 15:10:40 SM:  Uses SunLibraryModule.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 class contact extends SunLibraryModule
 {
@@ -18,7 +18,8 @@ class contact extends SunLibraryModule
         parent::__construct($dbConnection);
     }
 
-    function contact() {
+    function contact()
+    {
 
         echo '<form method="POST" action="?id=Contact&&moduleID=uploadContact">';
         echo '<table width=100% border=0 cellpadding=10>';
@@ -45,7 +46,8 @@ class contact extends SunLibraryModule
         echo '</table></form>';
     }
 
-    public function uploadContact() {
+    public function uploadContact()
+    {
 
         $setName = filter_input(INPUT_POST, 'subjectName');
         $setOrder = 1;
@@ -60,7 +62,8 @@ class contact extends SunLibraryModule
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Contact">';
     }
 
-    public function editSubject() {
+    public function editSubject()
+    {
 
         $getID = filter_input(INPUT_GET, 'contactID');
 
@@ -73,17 +76,17 @@ class contact extends SunLibraryModule
 
             echo '<table>';
             echo '<tr><td><h1>Edit Contact Subject</h1></td></tr>';
-            
-            echo '<tr><td><a href="?id=Contact&&moduleID=deleteContact&&contactID='.$getID.'"><button>Delete</button></a></td></tr>';
-            
+
+            echo '<tr><td><a href="?id=Contact&&moduleID=deleteContact&&contactID=' . $getID . '"><button>Delete</button></a></td></tr>';
+
             echo '<form method="POST" action="?id=Contact&&moduleID=updateContact">';
-            echo '<input type="hidden" name="contactID" value="'.$getID.'">';
-            
+            echo '<input type="hidden" name="contactID" value="' . $getID . '">';
+
             echo '<tr><td>Contact Subject </td><td><input type="text" name="contactName" value="' . $contactSubject . '" size=40></td></tr>';
             echo '<tr><td><input type="submit" name="submit" value="Update"></form></td></tr>';
             echo '</table>';
             echo '</form>';
-            
+
             $stmt->close();
         }
     }
@@ -100,9 +103,10 @@ class contact extends SunLibraryModule
         echo 'You have successfully Delete a ContactSubject. <br><br><br>Please Wait.....<br>';
         echo '<meta http-equiv="refresh" content="3;url=web-settings.php?id=Contact">';
     }
-    
-    public function updateContact() {
-        
+
+    public function updateContact()
+    {
+
         $getName = filter_input(INPUT_POST, 'contactName');
         $getID = filter_input(INPUT_POST, 'contactID');
 
@@ -124,22 +128,21 @@ class contact extends SunLibraryModule
 
     public function renderHeaderLinks()
     {
-?>
+        ?>
         <link rel="stylesheet" type="text/css" href="style.css">
-<?php
+        <?php
     }
 
     protected function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `contact` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `contact` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE contact (contactID INT(11) AUTO_INCREMENT PRIMARY KEY, contactSubject VARCHAR(10000) NOT NULL, contactOrder DECIMAL(4,2) NOT NULL ) ");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     public function getVersion()
@@ -147,4 +150,5 @@ class contact extends SunLibraryModule
         return $this->readVersionFromFile(__FILE__);
     }
 }
+
 ?>

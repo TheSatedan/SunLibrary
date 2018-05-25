@@ -10,7 +10,7 @@
  * @version         1.1.1               2016-12-16 16:27:57 SM:  Added doco.
  */
 
-require_once dirname(dirname(__FILE__)).'/SunLibraryModule.php';
+require_once dirname(dirname(__FILE__)) . '/SunLibraryModule.php';
 
 /**
  * Flatbedslider module.
@@ -103,17 +103,19 @@ class flatbedslider extends SunLibraryModule
         $stmt = $this->objDB->prepare("UPDATE teampanel SET $contentCode=? WHERE teampanelID=1");
         $stmt->bind_param('s', $contentImageName);
 
-        if ($stmt === false)
+        if ($stmt === false) {
             trigger_error($this->objDB->error, E_USER_ERROR);
+        }
         $status = $stmt->execute();
-        if ($status === false) 
+        if ($status === false) {
             trigger_error($stmt->error, E_USER_ERROR);
-?>
+        }
+        ?>
         <font color="black">
             <b>Content Image Information Updated <br><br> Please Wait!!!!</b><br>
             <meta http-equiv="refresh" content="1;url=?id=FlatbedSlider">
         </font>
-<?php
+        <?php
     }
 
     /**
@@ -123,17 +125,17 @@ class flatbedslider extends SunLibraryModule
      */
     public function renderCustomJavaScript()
     {
-?>
+        ?>
         $("#slideshow > div:gt(0)").hide();
         setInterval(function () {
-            $('#slideshow > div:first')
-            .fadeOut(2000)
-            .next()
-            .fadeIn(2000)
-            .end()
-            .appendTo('#slideshow');
-         }, 5000);
-<?php
+        $('#slideshow > div:first')
+        .fadeOut(2000)
+        .next()
+        .fadeIn(2000)
+        .end()
+        .appendTo('#slideshow');
+        }, 5000);
+        <?php
     }
 
     /**
@@ -143,24 +145,23 @@ class flatbedslider extends SunLibraryModule
      */
     public function callToFunction()
     {
-?>
+        ?>
         <div id="flatbed-background">
             <div id="slideshow">
-<?php
+                <?php
                 $leftRef = $this->objBD->prepare("SELECT imageToSlide FROM flatbedslider ORDER BY sliderOrder");
                 $leftRef->execute();
                 $leftRef->bind_result($imageToSlide);
-                while ($checkRow = $leftRef->fetch())
-                {
-?>
-                    <div><img src="<?=IMAGE_PATH;?>/<?=$imageToSlide;?>" height="280"></div>
-<?php
+                while ($checkRow = $leftRef->fetch()) {
+                    ?>
+                    <div><img src="<?= IMAGE_PATH; ?>/<?= $imageToSlide; ?>" height="280"></div>
+                    <?php
                 }
                 $leftRef->close();
-?>
+                ?>
             </div>
         </div>
-<?php
+        <?php
     }
 
     /**
@@ -170,15 +171,14 @@ class flatbedslider extends SunLibraryModule
      */
     protected function assertTablesExist()
     {
-        $objResult=$this->objDB->query('select 1 from `flatbedslider` LIMIT 1');
-        if ($objResult===false)
-        {
+        $objResult = $this->objDB->query('select 1 from `flatbedslider` LIMIT 1');
+        if ($objResult === false) {
             $createTable = $this->objDB->prepare("CREATE TABLE flatbedslider (sliderID INT(11) AUTO_INCREMENT PRIMARY KEY, imageToSlide VARCHAR(100) NOT NULL, sliderOrder DECIMAL(3,0) NOT NULL)");
             $createTable->execute();
             $createTable->close();
-        }
-        else
+        } else {
             $objResult->free();
+        }
     }
 
     /**
